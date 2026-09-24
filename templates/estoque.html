@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Estoque - Meu Almoxarifado SENAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
+        <div class="nav-links">
+            <a href="{{ url_for('cadastrar_produto') }}">+ Cadastrar Produto</a>
+            {% if session.get('e_admin') %}
+                <a href="{{ url_for('usuarios') }}" class="btn btn-primary" style="padding: 6px 12px;">Gerenciar Usuários</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-card flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <div class="card">
+            <h2>Controle de Estoque</h2>
+            <br>
+            <form action="{{ url_for('estoque') }}" method="GET" class="search-bar">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar por Nome ou ID..." value="{{ busca }}">
+                <button type="submit" class="btn btn-secondary">Pesquisar</button>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Qtd.</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr>
+                            <td>#{{ produto.id }}</td>
+                            <td>
+                                <img src="{{ produto.imagem_url or 'https://via.placeholder.com/50' }}" class="img-thumb" alt="Foto">
+                            </td>
+                            <td><strong>{{ produto.nome }}</strong></td>
+                            <td>{{ produto.descricao }}</td>
+                            <td><span class="btn btn-secondary" style="padding: 2px 8px;">{{ produto.quantidade }}</span></td>
+                            <td>
+                                <a href="{{ url_for('editar_produto', id=produto.id) }}" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.9rem;">Gerenciar</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Nenhum produto encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
