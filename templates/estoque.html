@@ -43,6 +43,7 @@
                             <th>ID</th>
                             <th>Imagem</th>
                             <th>Nome</th>
+                            <th>Categoria</th>
                             <th>Descrição</th>
                             <th>Qtd.</th>
                             <th>Ações</th>
@@ -56,6 +57,11 @@
                                 <img src="{{ produto.imagem_url or 'https://via.placeholder.com/50' }}" class="img-thumb" alt="Foto">
                             </td>
                             <td><strong>{{ produto.nome }}</strong></td>
+                            <td>
+                                <span class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.85rem; background-color: var(--senai-blue);">
+                                    {{ produto.categoria or 'Geral' }}
+                                </span>
+                            </td>
                             <td>{{ produto.descricao }}</td>
                             <td><span class="btn btn-secondary" style="padding: 2px 8px;">{{ produto.quantidade }}</span></td>
                             <td>
@@ -64,7 +70,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" style="text-align: center;">Nenhum produto encontrado.</td>
+                            <td colspan="7" style="text-align: center;">Nenhum produto encontrado.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -72,5 +78,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        setTimeout(() => {
+            const flash = document.querySelector('.flash-container');
+            if (flash) {
+                flash.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                flash.style.opacity = '0';
+                flash.style.transform = 'translateY(-20px)';
+                setTimeout(() => flash.remove(), 500);
+            }
+        }, 5000);
+    </script>
 </body>
 </html>

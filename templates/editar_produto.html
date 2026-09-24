@@ -35,6 +35,17 @@
                     <input type="text" name="nome" class="form-control" value="{{ produto.nome }}" required>
                 </div>
                 <div class="form-group">
+                    <label>Categoria</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Elétrica" {% if produto.categoria == 'Elétrica' %}selected{% endif %}>Elétrica</option>
+                        <option value="Mecânica" {% if produto.categoria == 'Mecânica' %}selected{% endif %}>Mecânica</option>
+                        <option value="Ferramentas" {% if produto.categoria == 'Ferramentas' %}selected{% endif %}>Ferramentas</option>
+                        <option value="Acabamento" {% if produto.categoria == 'Acabamento' %}selected{% endif %}>Acabamento</option>
+                        <option value="Instrumentos de Medição" {% if produto.categoria == 'Instrumentos de Medição' %}selected{% endif %}>Instrumentos de Medição</option>
+                        <option value="Fiação" {% if produto.categoria == 'Fiação' %}selected{% endif %}>Fiação</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>URL da Imagem</label>
                     <input type="text" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}">
                 </div>

@@ -82,8 +82,8 @@ def estoque():
             query = "SELECT * FROM produtos WHERE id = %s ORDER BY id DESC"
             cursor.execute(query, (int(busca),))
         else:
-            query = "SELECT * FROM produtos WHERE nome LIKE %s ORDER BY id DESC"
-            cursor.execute(query, (f"%{busca}%",))
+            query = "SELECT * FROM produtos WHERE nome LIKE %s OR categoria LIKE %s ORDER BY id DESC"
+            cursor.execute(query, (f"%{busca}%", f"%{busca}%"))
     else:
         cursor.execute("SELECT * FROM produtos ORDER BY id DESC")
 
@@ -167,6 +167,7 @@ def deletar_usuario(id):
 def cadastrar_produto():
     if request.method == 'POST':
         nome = request.form['nome'].strip()
+        categoria = request.form.get('categoria', '').strip()
         imagem_url = request.form['imagem_url'].strip()
         descricao = request.form['descricao'].strip()
         quantidade = int(request.form['quantidade'])
@@ -174,8 +175,8 @@ def cadastrar_produto():
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO produtos (nome, imagem_url, descricao, quantidade) VALUES (%s, %s, %s, %s)",
-            (nome, imagem_url, descricao, quantidade)
+            "INSERT INTO produtos (nome, categoria, imagem_url, descricao, quantidade) VALUES (%s, %s, %s, %s, %s)",
+            (nome, categoria, imagem_url, descricao, quantidade)
         )
         conn.commit()
         cursor.close()
@@ -198,13 +199,14 @@ def editar_produto(id):
 
         if acao == 'atualizar':
             nome = request.form['nome'].strip()
+            categoria = request.form.get('categoria', '').strip()
             imagem_url = request.form['imagem_url'].strip()
             descricao = request.form['descricao'].strip()
             quantidade = int(request.form['quantidade'])
 
             cursor.execute(
-                "UPDATE produtos SET nome = %s, imagem_url = %s, descricao = %s, quantidade = %s WHERE id = %s",
-                (nome, imagem_url, descricao, quantidade, id)
+                "UPDATE produtos SET nome = %s, categoria = %s, imagem_url = %s, descricao = %s, quantidade = %s WHERE id = %s",
+                (nome, categoria, imagem_url, descricao, quantidade, id)
             )
             conn.commit()
             flash('Produto atualizado!', 'success')
