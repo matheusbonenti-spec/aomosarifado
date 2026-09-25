@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Estoque - SENAI</title>
+    <style>
+        :root {
+            --senai-blue: #164194;
+            --senai-orange: #E84910;
+            --text-dark: #2C3E50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            margin: 20px;
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--senai-blue);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--senai-blue);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .header h1 span {
+            color: var(--senai-orange);
+        }
+
+        .meta-info {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: right;
+        }
+
+        .summary-cards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            flex: 1;
+            padding: 12px 18px;
+            background: #F4F6F9;
+            border-left: 4px solid var(--senai-blue);
+            border-radius: 4px;
+        }
+
+        .card.alert {
+            border-left-color: var(--senai-orange);
+        }
+
+        .card strong {
+            display: block;
+            font-size: 0.85rem;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .card span {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--senai-blue);
+        }
+
+        .card.alert span {
+            color: var(--senai-orange);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: var(--senai-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .btn-actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-pdf { background-color: #E84910; }
+        .btn-print { background-color: #164194; }
+        .btn-back { background-color: #6c757d; }
+
+        @media print {
+            .btn-actions { display: none; }
+            body { margin: 0; }
+            th { background-color: var(--senai-blue) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-actions">
+        <button onclick="window.print()" class="btn btn-pdf">📄 Salvar em PDF</button>
+        <button onclick="window.print()" class="btn btn-print">🖨️ Imprimir Relatório</button>
+        <a href="{{ url_for('estoque') }}" class="btn btn-back">⬅️ Voltar ao Estoque</a>
+    </div>
+
+    <div class="header">
+        <h1>MEU ALMOXARIFADO <span>SENAI</span></h1>
+        <div class="meta-info">
+            <strong>Relatório Geral de Estoque</strong><br>
+            Gerado em: {{ data_atual }}
+        </div>
+    </div>
+
+    <div class="summary-cards">
+        <div class="card">
+            <strong>Tipos de Produtos Cadastrados:</strong>
+            <span>{{ total_produtos }} tipos</span>
+        </div>
+        <div class="card">
+            <strong>Total de Itens no Estoque:</strong>
+            <span>{{ total_itens }} unidades</span>
+        </div>
+        <div class="card alert">
+            <strong>Itens com Estoque Baixo (&lt;5):</strong>
+            <span>{{ itens_baixo }} itens</span>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome do Produto</th>
+                <th>Categoria</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <tr>
+                <td>#{{ produto.id }}</td>
+                <td><strong>{{ produto.nome }}</strong></td>
+                <td>{{ produto.categoria or 'Geral' }}</td>
+                <td>{{ produto.descricao or '-' }}</td>
+                <td><strong>{{ produto.quantidade }}</strong></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">Nenhum produto cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

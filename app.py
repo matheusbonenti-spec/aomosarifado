@@ -1,9 +1,7 @@
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
-import csv
-import io
 from datetime import datetime
 
 app = Flask(__name__)
@@ -18,6 +16,63 @@ DB_CONFIG = {
 
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
+
+def init_db():
+    """Inicializa as tabelas do banco de dados e cria o usuário admin padrão caso não existam."""
+    try:
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome VARCHAR(100) NOT NULL,
+                usuario VARCHAR(50) NOT NULL UNIQUE,
+                senha VARCHAR(255) NOT NULL,
+                e_admin BOOLEAN NOT NULL DEFAULT FALSE
+            );
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS produtos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome VARCHAR(100) NOT NULL,
+                categoria VARCHAR(50) NOT NULL DEFAULT 'Ferramentas',
+                imagem_url TEXT,
+                descricao TEXT,
+                quantidade INT NOT NULL DEFAULT 0
+            );
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS movimentacoes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                produto_id INT NOT NULL,
+                usuario_id INT NOT NULL,
+                quantidade_retirada INT NOT NULL,
+                data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+            );
+        """)
+
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = 'admin'")
+        admin_existe = cursor.fetchone()
+
+        if not admin_existe:
+            senha_hash = generate_password_hash('admin123')
+            cursor.execute(
+                "INSERT INTO usuarios (nome, usuario, senha, e_admin) VALUES (%s, %s, %s, %s)",
+                ('Administrador SENAI', 'admin', senha_hash, True)
+            )
+            print("=> Usuário administrador ('admin' / 'admin123') criado com sucesso!")
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("=> Banco de dados verificado e atualizado com sucesso.")
+    except Exception as e:
+        print(f"=> Erro ao inicializar o banco de dados: {e}")
 
 def login_required(f):
     @wraps(f)
@@ -100,21 +155,21 @@ def estoque():
     conn.close()
 
     categorias_disponiveis = [
-    "Geral",
-    "Elétrica",
-    "Eletrônica e Automação",
-    "Mecânica",
-    "Pneumática e Hidráulica",
-    "Ferramentas",
-    "Ferramentas de Corte",
-    "Instrumentos de Medição",
-    "Fixação (Parafusos, Pregos e Porcas)",
-    "Lubrificação e Óleos",
-    "EPIs e Segurança",
-    "Solda e Consumíveis",
-    "Acabamento e Pintura",
-    "Limpeza e Organização"
-]
+        "Geral",
+        "Elétrica",
+        "Eletrônica e Automação",
+        "Mecânica",
+        "Pneumática e Hidráulica",
+        "Ferramentas",
+        "Ferramentas de Corte",
+        "Instrumentos de Medição",
+        "Fixação (Parafusos, Pregos e Porcas)",
+        "Lubrificação e Óleos",
+        "EPIs e Segurança",
+        "Solda e Consumíveis",
+        "Acabamento e Pintura",
+        "Limpeza e Organização"
+    ]
 
     return render_template(
         'estoque.html',
@@ -297,40 +352,6 @@ def editar_produto(id):
 
     return render_template('editar_produto.html', produto=produto)
 
-@app.route('/relatorio/excel')
-@login_required
-def exportar_excel():
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, nome, categoria, descricao, quantidade FROM produtos ORDER BY categoria ASC, nome ASC")
-    produtos = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    output = io.StringIO()
-    writer = csv.writer(output, delimiter=';')
-    writer.writerow(['ID', 'Nome do Produto', 'Categoria', 'Descrição', 'Quantidade em Estoque', 'Status Estoque'])
-    
-    for prod in produtos:
-        status = 'BAIXO' if prod['quantidade'] < 5 else 'OK'
-        writer.writerow([
-            prod['id'],
-            prod['nome'],
-            prod['categoria'] or 'Geral',
-            prod['descricao'] or '',
-            prod['quantidade'],
-            status
-        ])
-    
-    csv_content = '\ufeff' + output.getvalue()
-    nome_ficheiro = f"relatorio_estoque_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
-
-    return Response(
-        csv_content,
-        mimetype="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f"attachment; filename={nome_ficheiro}"}
-    )
-
 @app.route('/relatorio/imprimir')
 @login_required
 def imprimir_relatorio():
@@ -356,4 +377,5 @@ def imprimir_relatorio():
     )
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True, port=5001)

@@ -33,11 +33,8 @@
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem;">
                 <h2>Controle de Estoque</h2>
                 <div style="display: flex; gap: 10px;">
-                    <a href="{{ url_for('exportar_excel') }}" class="btn" style="background-color: #217346; color: white; padding: 8px 14px; font-size: 0.9rem;">
-                        📊 Baixar Excel
                     </a>
-                    <a href="{{ url_for('imprimir_relatorio') }}" target="_blank" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.9rem;">
-                        📄 Gerar PDF / Imprimir
+                   <a href="{{ url_for('imprimir_relatorio') }}" class="btn btn-primary">🖨️ Relatório</a>
                     </a>
                 </div>
             </div>
