@@ -18,10 +18,20 @@ CREATE TABLE IF NOT EXISTS produtos (
     quantidade INT NOT NULL DEFAULT 0
 );
 
+-- Tabela para registrar o histórico de retiradas/baixas
+CREATE TABLE IF NOT EXISTS movimentacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    produto_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    quantidade_retirada INT NOT NULL,
+    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
 -- Insere o administrador padrão (usuario: admin | senha: admin123)
 INSERT INTO usuarios (nome, usuario, senha, e_admin)
 SELECT 'Administrador SENAI', 'admin', 'scrypt:32768:8:1$m9g52J4o8d4K$5dbbfcb6e74b122dd70df83eb2e5d95e2df40bbf9b2e8bfbc5ecf235941c6183a31c50e410f9e9cf2efb2512fefc2a937a0980590a2ffbf296d38e3a2e0a2948', TRUE
 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE usuario = 'admin');
 
--- Preenche a categoria de produtos antigos já existentes no banco
 UPDATE produtos SET categoria = 'Ferramentas' WHERE categoria IS NULL OR categoria = '';

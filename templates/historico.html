@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Movimentações - SENAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
+        <div class="nav-links">
+            <a href="{{ url_for('estoque') }}">Voltar ao Estoque</a>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>📜 Histórico de Baixas e Retiradas</h2>
+            <p style="color: #666; margin-bottom: 1rem;">Registro permanente das retiradas realizadas no almoxarifado.</p>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data e Hora</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Quantidade Retirada</th>
+                            <th>Usuário Responsável</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mov in movimentacoes %}
+                        <tr>
+                            <td>{{ mov.data_hora.strftime('%d/%m/%Y às %H:%M:%S') }}</td>
+                            <td><strong>{{ mov.produto_nome }}</strong></td>
+                            <td><span class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">{{ mov.categoria }}</span></td>
+                            <td><span class="badge-alert" style="background: #dc3545; color: white;">-{{ mov.quantidade_retirada }} unid.</span></td>
+                            <td>👤 {{ mov.usuario_nome }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Nenhuma baixa registrada até o momento.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

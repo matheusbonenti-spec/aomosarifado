@@ -1,23 +1,24 @@
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
+import csv
+import io
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'chave_secreta_almoxarifado_senai'
 
-# Configuração de Conexão com o Banco de Dados
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '',  # Insira a senha do seu MySQL, se houver
+    'password': '',
     'database': 'almoxarifado_db'
 }
 
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
-# Decoradores de Proteção de Rota
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -36,7 +37,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Rota: Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -61,39 +61,73 @@ def login():
 
     return render_template('login.html')
 
-# Rota: Logout
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Você saiu da sua conta.', 'info')
     return redirect(url_for('login'))
 
-# Rota: Estoque / Busca
 @app.route('/')
 @app.route('/estoque')
 @login_required
 def estoque():
     busca = request.args.get('busca', '').strip()
+    categoria_filtro = request.args.get('categoria', '').strip()
+    
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
+    query = "SELECT * FROM produtos WHERE 1=1"
+    params = []
+
+    if categoria_filtro:
+        query += " AND categoria = %s"
+        params.append(categoria_filtro)
+
     if busca:
         if busca.isdigit():
-            query = "SELECT * FROM produtos WHERE id = %s ORDER BY id DESC"
-            cursor.execute(query, (int(busca),))
+            query += " AND id = %s"
+            params.append(int(busca))
         else:
-            query = "SELECT * FROM produtos WHERE nome LIKE %s OR categoria LIKE %s ORDER BY id DESC"
-            cursor.execute(query, (f"%{busca}%", f"%{busca}%"))
-    else:
-        cursor.execute("SELECT * FROM produtos ORDER BY id DESC")
+            query += " AND nome LIKE %s"
+            params.append(f"%{busca}%")
 
+    query += " ORDER BY id DESC"
+    cursor.execute(query, tuple(params))
     produtos = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template('estoque.html', produtos=produtos, busca=busca)
+    categorias_disponiveis = ["Elétrica", "Mecânica", "Ferramentas", "Acabamento", "Instrumentos de Medição", "Fiação"]
 
-# Rota: Gestão de Usuários (Apenas Admin)
+    return render_template(
+        'estoque.html',
+        produtos=produtos,
+        busca=busca,
+        categoria_filtro=categoria_filtro,
+        categorias=categorias_disponiveis
+    )
+
+@app.route('/historico')
+@login_required
+def historico():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+        SELECT m.id, p.nome AS produto_nome, p.categoria, u.nome AS usuario_nome, m.quantidade_retirada, m.data_hora
+        FROM movimentacoes m
+        JOIN produtos p ON m.produto_id = p.id
+        JOIN usuarios u ON m.usuario_id = u.id
+        ORDER BY m.data_hora DESC
+    """
+    cursor.execute(query)
+    movimentacoes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('historico.html', movimentacoes=movimentacoes)
+
 @app.route('/usuarios', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -142,7 +176,6 @@ def usuarios():
 
     return render_template('usuarios.html', usuarios=lista_usuarios)
 
-# Rota: Excluir Usuário (Apenas Admin)
 @app.route('/usuarios/deletar/<int:id>', methods=['POST'])
 @login_required
 @admin_required
@@ -161,7 +194,6 @@ def deletar_usuario(id):
     flash('Usuário removido com sucesso.', 'success')
     return redirect(url_for('usuarios'))
 
-# Rota: Cadastrar Produto
 @app.route('/produtos/novo', methods=['GET', 'POST'])
 @login_required
 def cadastrar_produto():
@@ -187,7 +219,6 @@ def cadastrar_produto():
 
     return render_template('cadastrar_produto.html')
 
-# Rota: Editar / Dar Baixa / Excluir Produto
 @app.route('/produtos/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_produto(id):
@@ -219,8 +250,12 @@ def editar_produto(id):
             if prod and prod['quantidade'] >= qtd_baixa:
                 nova_qtd = prod['quantidade'] - qtd_baixa
                 cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (nova_qtd, id))
+                cursor.execute(
+                    "INSERT INTO movimentacoes (produto_id, usuario_id, quantidade_retirada) VALUES (%s, %s, %s)",
+                    (id, session['user_id'], qtd_baixa)
+                )
                 conn.commit()
-                flash(f'Baixa de {qtd_baixa} unidade(s) realizada!', 'success')
+                flash(f'Baixa de {qtd_baixa} unidade(s) registrada no histórico!', 'success')
             else:
                 flash('Quantidade para baixa é superior ao estoque disponível.', 'danger')
 
@@ -246,6 +281,64 @@ def editar_produto(id):
         return redirect(url_for('estoque'))
 
     return render_template('editar_produto.html', produto=produto)
+
+@app.route('/relatorio/excel')
+@login_required
+def exportar_excel():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome, categoria, descricao, quantidade FROM produtos ORDER BY categoria ASC, nome ASC")
+    produtos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=';')
+    writer.writerow(['ID', 'Nome do Produto', 'Categoria', 'Descrição', 'Quantidade em Estoque', 'Status Estoque'])
+    
+    for prod in produtos:
+        status = 'BAIXO' if prod['quantidade'] < 5 else 'OK'
+        writer.writerow([
+            prod['id'],
+            prod['nome'],
+            prod['categoria'] or 'Geral',
+            prod['descricao'] or '',
+            prod['quantidade'],
+            status
+        ])
+    
+    csv_content = '\ufeff' + output.getvalue()
+    nome_ficheiro = f"relatorio_estoque_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+
+    return Response(
+        csv_content,
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={nome_ficheiro}"}
+    )
+
+@app.route('/relatorio/imprimir')
+@login_required
+def imprimir_relatorio():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM produtos ORDER BY categoria ASC, nome ASC")
+    produtos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    total_produtos = len(produtos)
+    total_itens = sum(p['quantidade'] for p in produtos)
+    itens_baixo = sum(1 for p in produtos if p['quantidade'] < 5)
+    data_atual = datetime.now().strftime('%d/%m/%Y às %H:%M')
+
+    return render_template(
+        'relatorio.html',
+        produtos=produtos,
+        total_produtos=total_produtos,
+        total_itens=total_itens,
+        itens_baixo=itens_baixo,
+        data_atual=data_atual
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

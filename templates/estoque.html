@@ -10,6 +10,7 @@
         <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
         <div class="nav-links">
             <a href="{{ url_for('cadastrar_produto') }}">+ Cadastrar Produto</a>
+            <a href="{{ url_for('historico') }}">📜 Histórico de Baixas</a>
             {% if session.get('e_admin') %}
                 <a href="{{ url_for('usuarios') }}" class="btn btn-primary" style="padding: 6px 12px;">Gerenciar Usuários</a>
             {% endif %}
@@ -29,11 +30,33 @@
 
     <div class="container">
         <div class="card">
-            <h2>Controle de Estoque</h2>
-            <br>
-            <form action="{{ url_for('estoque') }}" method="GET" class="search-bar">
-                <input type="text" name="busca" class="form-control" placeholder="Buscar por Nome ou ID..." value="{{ busca }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem;">
+                <h2>Controle de Estoque</h2>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ url_for('exportar_excel') }}" class="btn" style="background-color: #217346; color: white; padding: 8px 14px; font-size: 0.9rem;">
+                        📊 Baixar Excel
+                    </a>
+                    <a href="{{ url_for('imprimir_relatorio') }}" target="_blank" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.9rem;">
+                        📄 Gerar PDF / Imprimir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Formulário de Pesquisa + Filtro por Categoria -->
+            <form action="{{ url_for('estoque') }}" method="GET" class="search-bar" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar por Nome ou ID..." value="{{ busca }}" style="flex: 2; min-width: 200px;">
+                
+                <select name="categoria" class="form-control" style="flex: 1; min-width: 180px;">
+                    <option value="">Todas as Categorias</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat }}" {% if categoria_filtro == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+
                 <button type="submit" class="btn btn-secondary">Pesquisar</button>
+                {% if busca or categoria_filtro %}
+                    <a href="{{ url_for('estoque') }}" class="btn btn-danger" style="text-decoration: none;">Limpar Filtros</a>
+                {% endif %}
             </form>
 
             <div class="table-responsive">
@@ -51,19 +74,28 @@
                     </thead>
                     <tbody>
                         {% for produto in produtos %}
-                        <tr>
+                        <tr {% if produto.quantidade < 5 %}class="row-low-stock"{% endif %}>
                             <td>#{{ produto.id }}</td>
                             <td>
                                 <img src="{{ produto.imagem_url or 'https://via.placeholder.com/50' }}" class="img-thumb" alt="Foto">
                             </td>
-                            <td><strong>{{ produto.nome }}</strong></td>
+                            <td>
+                                <strong>{{ produto.nome }}</strong>
+                                {% if produto.quantidade < 5 %}
+                                    <br><span class="badge-alert">⚠️ ESTOQUE BAIXO</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.85rem; background-color: var(--senai-blue);">
                                     {{ produto.categoria or 'Geral' }}
                                 </span>
                             </td>
-                            <td>{{ produto.descricao }}</td>
-                            <td><span class="btn btn-secondary" style="padding: 2px 8px;">{{ produto.quantidade }}</span></td>
+                            <td>{{ produto.descricao or '-' }}</td>
+                            <td>
+                                <span class="btn {% if produto.quantidade < 5 %}btn-danger{% else %}btn-secondary{% endif %}" style="padding: 2px 8px; font-weight: bold;">
+                                    {{ produto.quantidade }}
+                                </span>
+                            </td>
                             <td>
                                 <a href="{{ url_for('editar_produto', id=produto.id) }}" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.9rem;">Gerenciar</a>
                             </td>
