@@ -99,7 +99,22 @@ def estoque():
     cursor.close()
     conn.close()
 
-    categorias_disponiveis = ["Elétrica", "Mecânica", "Ferramentas", "Acabamento", "Instrumentos de Medição", "Fiação"]
+    categorias_disponiveis = [
+    "Geral",
+    "Elétrica",
+    "Eletrônica e Automação",
+    "Mecânica",
+    "Pneumática e Hidráulica",
+    "Ferramentas",
+    "Ferramentas de Corte",
+    "Instrumentos de Medição",
+    "Fixação (Parafusos, Pregos e Porcas)",
+    "Lubrificação e Óleos",
+    "EPIs e Segurança",
+    "Solda e Consumíveis",
+    "Acabamento e Pintura",
+    "Limpeza e Organização"
+]
 
     return render_template(
         'estoque.html',

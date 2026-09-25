@@ -22,30 +22,43 @@
                     <label>Nome do Produto</label>
                     <input type="text" name="nome" class="form-control" required>
                 </div>
+
                 <div class="form-group">
                     <label>Categoria</label>
                     <select name="categoria" class="form-control" required>
                         <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="Geral">Geral</option>
                         <option value="Elétrica">Elétrica</option>
+                        <option value="Eletrônica e Automação">Eletrônica e Automação</option>
                         <option value="Mecânica">Mecânica</option>
+                        <option value="Pneumática e Hidráulica">Pneumática e Hidráulica</option>
                         <option value="Ferramentas">Ferramentas</option>
-                        <option value="Acabamento">Acabamento</option>
+                        <option value="Ferramentas de Corte">Ferramentas de Corte</option>
                         <option value="Instrumentos de Medição">Instrumentos de Medição</option>
-                        <option value="Fiação">Fiação</option>
+                        <option value="Fixação (Parafusos, Pregos e Porcas)">Fixação (Parafusos, Pregos e Porcas)</option>
+                        <option value="Lubrificação e Óleos">Lubrificação e Óleos</option>
+                        <option value="EPIs e Segurança">EPIs e Segurança</option>
+                        <option value="Solda e Consumíveis">Solda e Consumíveis</option>
+                        <option value="Acabamento e Pintura">Acabamento e Pintura</option>
+                        <option value="Limpeza e Organização">Limpeza e Organização</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>URL da Imagem</label>
                     <input type="url" name="imagem_url" class="form-control" placeholder="https://exemplo.com/imagem.png">
                 </div>
+
                 <div class="form-group">
                     <label>Descrição</label>
                     <textarea name="descricao" class="form-control" rows="3"></textarea>
                 </div>
+
                 <div class="form-group">
                     <label>Quantidade Inicial</label>
                     <input type="number" name="quantidade" class="form-control" min="0" value="1" required>
                 </div>
+
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Salvar Produto</button>
             </form>
         </div>
