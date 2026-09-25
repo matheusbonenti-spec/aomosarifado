@@ -310,24 +310,34 @@ def editar_produto(id):
                 (nome, categoria, imagem_url, descricao, quantidade, id)
             )
             conn.commit()
-            flash('Produto atualizado!', 'success')
+            flash('Dados do produto atualizados com sucesso!', 'success')
 
-        elif acao == 'dar_baixa':
-            qtd_baixa = int(request.form['qtd_baixa'])
+        elif acao == 'movimentar':
+            tipo_movimento = request.form.get('tipo_movimento')
+            qtd = int(request.form['qtd_movimento'])
+
             cursor.execute("SELECT quantidade FROM produtos WHERE id = %s", (id,))
             prod = cursor.fetchone()
 
-            if prod and prod['quantidade'] >= qtd_baixa:
-                nova_qtd = prod['quantidade'] - qtd_baixa
-                cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (nova_qtd, id))
-                cursor.execute(
-                    "INSERT INTO movimentacoes (produto_id, usuario_id, quantidade_retirada) VALUES (%s, %s, %s)",
-                    (id, session['user_id'], qtd_baixa)
-                )
-                conn.commit()
-                flash(f'Baixa de {qtd_baixa} unidade(s) registrada no histórico!', 'success')
-            else:
-                flash('Quantidade para baixa é superior ao estoque disponível.', 'danger')
+            if prod:
+                if tipo_movimento == 'adicionar':
+                    nova_qtd = prod['quantidade'] + qtd
+                    cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (nova_qtd, id))
+                    conn.commit()
+                    flash(f'{qtd} unidade(s) adicionada(s) ao estoque com sucesso!', 'success')
+
+                elif tipo_movimento == 'retirar':
+                    if prod['quantidade'] >= qtd:
+                        nova_qtd = prod['quantidade'] - qtd
+                        cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (nova_qtd, id))
+                        cursor.execute(
+                            "INSERT INTO movimentacoes (produto_id, usuario_id, quantidade_retirada) VALUES (%s, %s, %s)",
+                            (id, session['user_id'], qtd)
+                        )
+                        conn.commit()
+                        flash(f'Retirada de {qtd} unidade(s) registrada no histórico!', 'success')
+                    else:
+                        flash('A quantidade para retirada é superior ao estoque disponível.', 'danger')
 
         elif acao == 'excluir':
             cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))

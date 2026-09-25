@@ -16,7 +16,7 @@
 
     <div class="container">
         <div class="card">
-            <h2>📜 Histórico de Baixas e Retiradas</h2>
+            <h2>Histórico de Baixas e Retiradas</h2>
             <p style="color: #666; margin-bottom: 1rem;">Registro permanente das retiradas realizadas no almoxarifado.</p>
 
             <div class="table-responsive">
@@ -37,7 +37,7 @@
                             <td><strong>{{ mov.produto_nome }}</strong></td>
                             <td><span class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">{{ mov.categoria }}</span></td>
                             <td><span class="badge-alert" style="background: #dc3545; color: white;">-{{ mov.quantidade_retirada }} unid.</span></td>
-                            <td>👤 {{ mov.usuario_nome }}</td>
+                            <td>{{ mov.usuario_nome }}</td>
                         </tr>
                         {% else %}
                         <tr>

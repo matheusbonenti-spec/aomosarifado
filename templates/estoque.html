@@ -10,7 +10,7 @@
         <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
         <div class="nav-links">
             <a href="{{ url_for('cadastrar_produto') }}">+ Cadastrar Produto</a>
-            <a href="{{ url_for('historico') }}">📜 Histórico de Baixas</a>
+            <a href="{{ url_for('historico') }}">Histórico de Baixas</a>
             {% if session.get('e_admin') %}
                 <a href="{{ url_for('usuarios') }}" class="btn btn-primary" style="padding: 6px 12px;">Gerenciar Usuários</a>
             {% endif %}
@@ -34,7 +34,7 @@
                 <h2>Controle de Estoque</h2>
                 <div style="display: flex; gap: 10px;">
                     </a>
-                   <a href="{{ url_for('imprimir_relatorio') }}" class="btn btn-primary">🖨️ Relatório</a>
+                   <a href="{{ url_for('imprimir_relatorio') }}" class="btn btn-primary">Relatório</a>
                     </a>
                 </div>
             </div>
@@ -78,8 +78,8 @@
                             </td>
                             <td>
                                 <strong>{{ produto.nome }}</strong>
-                                {% if produto.quantidade < 5 %}
-                                    <br><span class="badge-alert">⚠️ ESTOQUE BAIXO</span>
+                                {% if produto.quantidade < 3 %}
+                                    <br><span class="badge-alert">ESTOQUE BAIXO</span>
                                 {% endif %}
                             </td>
                             <td>

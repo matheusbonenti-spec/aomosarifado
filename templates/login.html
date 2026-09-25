@@ -2,34 +2,56 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Meu Almoxarifado SENAI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="login-body">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-container">
-                {% for category, message in messages %}
-                    <div class="flash-card flash-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+    <div class="login-container">
+        <!-- Lado Esquerdo: Form de Login -->
+        <div class="login-left">
+            <div class="login-box">
+                <div class="login-header">
+                    <h2>MEU ALMOXARIFADO <span>SENAI</span></h2>
+                    <p>Acesse com suas credenciais para gerenciar o estoque.</p>
+                </div>
 
-    <div class="login-card">
-        <h2>ALMOXARIFADO <span>SENAI</span></h2>
-        <form action="{{ url_for('login') }}" method="POST">
-            <div class="form-group">
-                <label>Usuário</label>
-                <input type="text" name="usuario" class="form-control" required placeholder="Digite seu usuário">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 0.9rem; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;">
+                          {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('login') }}" method="POST">
+                    <div class="form-group">
+                        <label for="usuario">Usuário</label>
+                        <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Digite seu usuário" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Entrar no Sistema</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" name="senha" class="form-control" required placeholder="Digite sua senha">
+        </div>
+
+        <!-- Lado Direito: Imagem SENAI com Gradiente -->
+        <div class="login-right">
+            <div class="overlay-gradient"></div>
+            <div class="login-right-content">
+                <h3>Gestão e Eficiência Industrial</h3>
+                <p>Plataforma centralizada para controle de insumos, ferramentas e materiais do SENAI.</p>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
-        </form>
+        </div>
     </div>
+
 </body>
 </html>

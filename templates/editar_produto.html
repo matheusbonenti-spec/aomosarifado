@@ -2,71 +2,95 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Produto - SENAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar / Movimentar Produto - Almoxarifado SENAI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
-        <div class="nav-links">
-            <a href="{{ url_for('estoque') }}">Voltar ao Estoque</a>
-        </div>
-    </nav>
 
-    <div class="container" style="max-width: 700px;">
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <h2>Dar Baixa no Estoque</h2>
-            <p><strong>Produto:</strong> {{ produto.nome }} | <strong>Atual:</strong> {{ produto.quantidade }} unidades</p>
-            <br>
-            <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST" style="display: flex; gap: 10px;">
-                <input type="hidden" name="acao" value="dar_baixa">
-                <input type="number" name="qtd_baixa" class="form-control" min="1" max="{{ produto.quantidade }}" placeholder="Quantidade para retirar" required>
-                <button type="submit" class="btn btn-primary">Retirar do Estoque</button>
+    <div class="container" style="max-width: 600px; margin-top: 30px;">
+        <h2>Editar / Movimentar Produto</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Bloco 1: Movimentação Rápida de Estoque (Dois Botões) -->
+        <div class="card" style="background: #eef2f5; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #ccc;">
+            <h3 style="margin-top: 0; color: #164194;">Movimentação Rápida de Estoque</h3>
+            <p style="font-size: 0.95rem; color: #333; margin-bottom: 15px;">
+                Estoque Atual: <strong style="font-size: 1.1rem; color: #164194;">{{ produto.quantidade }} unidades</strong>
+            </p>
+
+            <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST">
+                <input type="hidden" name="acao" value="movimentar">
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="qtd_movimento">Quantidade para movimentar:</label>
+                    <input type="number" id="qtd_movimento" name="qtd_movimento" class="form-control" min="1" value="1" required style="font-size: 1rem; padding: 8px;">
+                </div>
+
+                <!-- Botões lado a lado: Verde para Adicionar, Vermelho para Retirar -->
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="submit" name="tipo_movimento" value="adicionar" class="btn" style="flex: 1; background-color: #164194; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+                        Adicionar
+                    </button>
+                    <button type="submit" name="tipo_movimento" value="retirar" class="btn" style="flex: 1; background-color: #E84910; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+                        Retirar
+                    </button>
+                </div>
             </form>
         </div>
 
-        <div class="card">
-            <h2>Editar Informações do Produto</h2>
-            <br>
+        <!-- Bloco 2: Edição dos Dados Gerais do Produto -->
+        <div class="card" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc;">
+            <h3 style="margin-top: 0;">Alterar Informações do Produto</h3>
+
             <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST">
                 <input type="hidden" name="acao" value="atualizar">
+
                 <div class="form-group">
-                    <label>Nome do Produto</label>
-                    <input type="text" name="nome" class="form-control" value="{{ produto.nome }}" required>
+                    <label for="nome">Nome do Produto</label>
+                    <input type="text" id="nome" name="nome" class="form-control" value="{{ produto.nome }}" required>
                 </div>
+
                 <div class="form-group">
-                    <label>Categoria</label>
-                    <select name="categoria" class="form-control" required>
-                        <option value="Elétrica" {% if produto.categoria == 'Elétrica' %}selected{% endif %}>Elétrica</option>
-                        <option value="Mecânica" {% if produto.categoria == 'Mecânica' %}selected{% endif %}>Mecânica</option>
-                        <option value="Ferramentas" {% if produto.categoria == 'Ferramentas' %}selected{% endif %}>Ferramentas</option>
-                        <option value="Acabamento" {% if produto.categoria == 'Acabamento' %}selected{% endif %}>Acabamento</option>
-                        <option value="Instrumentos de Medição" {% if produto.categoria == 'Instrumentos de Medição' %}selected{% endif %}>Instrumentos de Medição</option>
-                        <option value="Fiação" {% if produto.categoria == 'Fiação' %}selected{% endif %}>Fiação</option>
-                    </select>
+                    <label for="categoria">Categoria</label>
+                    <input type="text" id="categoria" name="categoria" class="form-control" value="{{ produto.categoria }}">
                 </div>
+
                 <div class="form-group">
-                    <label>URL da Imagem</label>
-                    <input type="text" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}">
+                    <label for="quantidade">Estoque Fixo (Substituir Total Manualmente)</label>
+                    <input type="number" id="quantidade" name="quantidade" class="form-control" value="{{ produto.quantidade }}" required>
                 </div>
+
                 <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea name="descricao" class="form-control" rows="3">{{ produto.descricao }}</textarea>
+                    <label for="imagem_url">URL da Imagem</label>
+                    <input type="text" id="imagem_url" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}">
                 </div>
+
                 <div class="form-group">
-                    <label>Quantidade em Estoque</label>
-                    <input type="number" name="quantidade" class="form-control" min="0" value="{{ produto.quantidade }}" required>
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" class="form-control" rows="3">{{ produto.descricao }}</textarea>
                 </div>
-                <button type="submit" class="btn btn-secondary">Atualizar Produto</button>
+
+                <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Salvar Alterações do Produto</button>
             </form>
 
-            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
-
-            <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST" onsubmit="return confirm('Tem certeza de que deseja EXCLUIR este produto permanentemente?');">
+            <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST" style="margin-top: 15px;" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
                 <input type="hidden" name="acao" value="excluir">
-                <button type="submit" class="btn btn-danger">Excluir Produto Permanentemente</button>
+                <button type="submit" class="btn btn-danger" style="width: 100%; background-color: #E84910; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">Excluir Produto</button>
             </form>
         </div>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{{ url_for('estoque') }}" class="btn btn-link">Voltar ao Estoque</a>
+        </div>
     </div>
+
 </body>
 </html>
