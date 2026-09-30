@@ -33,9 +33,23 @@ def inicializar_banco():
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 usuario VARCHAR(50) UNIQUE NOT NULL,
-                senha VARCHAR(255) NOT NULL
+                senha VARCHAR(255) NOT NULL,
+                tipo VARCHAR(20) DEFAULT 'padrao'
             )
         """)
+
+        # Adiciona a coluna 'tipo' caso a tabela já existisse sem ela
+        try:
+            cursor.execute("ALTER TABLE usuarios ADD COLUMN tipo VARCHAR(20) DEFAULT 'padrao'")
+        except:
+            pass
+
+        # Garante que o utilizador 'admin' existe e é do tipo 'admin'
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = 'admin'")
+        if not cursor.fetchone():
+            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES ('admin', 'admin', 'admin')")
+        else:
+            cursor.execute("UPDATE usuarios SET tipo = 'admin' WHERE usuario = 'admin'")
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS produtos (
@@ -57,10 +71,6 @@ def inicializar_banco():
                 data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
-
-        cursor.execute("SELECT * FROM usuarios WHERE usuario = 'admin'")
-        if not cursor.fetchone():
-            cursor.execute("INSERT INTO usuarios (usuario, senha) VALUES ('admin', 'admin')")
 
         conn.commit()
         cursor.close()
@@ -99,6 +109,7 @@ def login():
         if user:
             session['user_id'] = user['id']
             session['usuario'] = user['usuario']
+            session['tipo'] = user.get('tipo', 'padrao')
             flash('Login realizado com sucesso!', 'success')
             return redirect(url_for('estoque'))
         else:
@@ -253,12 +264,16 @@ def usuarios():
     if request.method == 'POST':
         usuario = request.form['usuario'].strip()
         senha = request.form['senha'].strip()
+        tipo = request.form.get('tipo', 'padrao')
 
-        cursor.execute("INSERT INTO usuarios (usuario, senha) VALUES (%s, %s)", (usuario, senha))
-        conn.commit()
-        flash('Usuário cadastrado com sucesso!', 'success')
+        try:
+            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES (%s, %s, %s)", (usuario, senha, tipo))
+            conn.commit()
+            flash('Usuário cadastrado com sucesso!', 'success')
+        except Exception as e:
+            flash('Erro ao cadastrar usuário. O nome de usuário já pode existir.', 'danger')
 
-    cursor.execute("SELECT id, usuario FROM usuarios ORDER BY usuario ASC")
+    cursor.execute("SELECT id, usuario, tipo FROM usuarios ORDER BY usuario ASC")
     lista_usuarios = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -278,4 +293,4 @@ def deletar_usuario(id):
     return redirect(url_for('usuarios'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)

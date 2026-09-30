@@ -25,7 +25,7 @@
         </nav>
     </header>
 
-    <div class="container" style="max-width: 800px; margin: 25px auto; padding: 0 15px;">
+    <div class="container" style="max-width: 850px; margin: 25px auto; padding: 0 15px;">
 
         <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -43,14 +43,22 @@
             <h3 style="margin-top: 0; color: #2d3748; font-size: 1.1rem; margin-bottom: 15px;">Cadastrar Novo Usuário</h3>
             
             <form action="{{ url_for('usuarios') }}" method="POST" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                <div style="flex: 1; min-width: 200px;">
+                <div style="flex: 1; min-width: 180px;">
                     <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Nome do Usuário:</label>
-                    <input type="text" name="usuario" required class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
+                    <input type="text" name="usuario" required class="form-control" placeholder="Ex: Kurt Cobain" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
                 </div>
 
-                <div style="flex: 1; min-width: 200px;">
+                <div style="flex: 1; min-width: 180px;">
                     <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Senha:</label>
                     <input type="password" name="senha" required class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
+                </div>
+
+                <div style="flex: 1; min-width: 160px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Perfil / Permissão:</label>
+                    <select name="tipo" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; background-color: white;">
+                        <option value="padrao">Usuário Padrão</option>
+                        <option value="admin">Administrador</option>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn" style="background-color: #E84910; color: white; border: none; padding: 9px 20px; font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
@@ -64,9 +72,10 @@
             <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
                 <thead>
                     <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: left; color: #4a5568;">
-                        <th style="padding: 12px 16px; width: 80px;">ID</th>
+                        <th style="padding: 12px 16px; width: 60px;">ID</th>
                         <th style="padding: 12px 16px;">Nome de Usuário</th>
-                        <th style="padding: 12px 16px; text-align: center; width: 120px;">Ações</th>
+                        <th style="padding: 12px 16px; text-align: center;">Perfil</th>
+                        <th style="padding: 12px 16px; text-align: center; width: 100px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,6 +83,17 @@
                     <tr style="border-bottom: 1px solid #edf2f7;">
                         <td style="padding: 10px 16px; color: #718096;">#{{ u.id }}</td>
                         <td style="padding: 10px 16px; font-weight: 600; color: #2d3748;">{{ u.usuario }}</td>
+                        <td style="padding: 10px 16px; text-align: center;">
+                            {% if u.tipo == 'admin' %}
+                            <span style="background-color: #feebc8; color: #c05621; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                                Administrador
+                            </span>
+                            {% else %}
+                            <span style="background-color: #e2e8f0; color: #4a5568; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                Usuário Padrão
+                            </span>
+                            {% endif %}
+                        </td>
                         <td style="padding: 10px 16px; text-align: center;">
                             <form action="{{ url_for('deletar_usuario', id=u.id) }}" method="POST" onsubmit="return confirm('Deseja realmente remover este usuário?');">
                                 <button type="submit" class="btn" style="background-color: #E84910; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
@@ -84,7 +104,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="3" style="text-align: center; padding: 20px; color: #a0aec0;">Nenhum usuário cadastrado.</td>
+                        <td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">Nenhum usuário cadastrado.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
