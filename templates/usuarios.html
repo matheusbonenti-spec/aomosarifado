@@ -3,109 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Usuários - Almoxarifado SENAI</title>
-    <!-- Ícone da Aba -->
+    <title>Usuários - Almoxarifado SENAI</title>
     <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <!-- Barra de Navegação Superior -->
-    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #164194; color: white;">
+    <!-- Cabeçalho Padrão SENAI -->
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 30px; background-color: #164194; color: white;">
         <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="height: 40px; border-radius: 4px;">
-            <h1 style="margin: 0; font-size: 1.4rem;">Gerenciamento de Usuários</h1>
+            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="height: 36px; border-radius: 4px;">
+            <h1 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Meu Almoxarifado SENAI</h1>
         </div>
         
-        <div style="display: flex; gap: 10px;">
-            <!-- Botão Voltar ao Estoque -->
-            <a href="{{ url_for('estoque') }}" class="btn" style="background-color: #ffffff; color: #164194; padding: 8px 16px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">
-                Voltar ao Estoque
-            </a>
-            <!-- Botão Sair -->
-            <a href="{{ url_for('logout') }}" class="btn" style="background-color: #E84910; color: white; padding: 8px 16px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">
-                Sair
-            </a>
-        </div>
+        <nav style="display: flex; gap: 8px; align-items: center;">
+            <a href="{{ url_for('estoque') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Estoque</a>
+            <a href="{{ url_for('historico') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Histórico</a>
+            <a href="{{ url_for('imprimir_relatorio') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Relatório</a>
+            <a href="{{ url_for('usuarios') }}" class="btn" style="background-color: #002b7a; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Usuários</a>
+            <a href="{{ url_for('logout') }}" class="btn" style="background-color: #E84910; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Sair</a>
+        </nav>
     </header>
 
-    <div class="container" style="max-width: 800px; margin: 30px auto; padding: 0 15px;">
+    <div class="container" style="max-width: 800px; margin: 25px auto; padding: 0 15px;">
 
-        <!-- Mensagens de Alerta (Flash) -->
+        <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }}" style="padding: 12px; margin-bottom: 20px; border-radius: 4px;">
-                  {{ message }}
-              </div>
+              <div class="alert alert-{{ category }}" style="padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem;">{{ message }}</div>
             {% endfor %}
           {% endif %}
         {% endwith %}
 
-        <!-- Formulário para Cadastrar Novo Usuário -->
-        <div class="card" style="background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h2 style="margin-top: 0; color: #164194;">Cadastrar Novo Usuário</h2>
+        <h2 style="color: #164194; margin-bottom: 20px; font-size: 1.35rem;">Gerenciamento de Usuários</h2>
+
+        <!-- Form de Novo Usuário -->
+        <div class="card" style="background: #ffffff; padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+            <h3 style="margin-top: 0; color: #2d3748; font-size: 1.1rem; margin-bottom: 15px;">Cadastrar Novo Usuário</h3>
             
-            <form action="{{ url_for('usuarios') }}" method="POST">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label for="usuario" style="font-weight: bold; display: block; margin-bottom: 5px;">Nome de Usuário</label>
-                    <input type="text" id="usuario" name="usuario" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <form action="{{ url_for('usuarios') }}" method="POST" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Nome do Usuário:</label>
+                    <input type="text" name="usuario" required class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="senha" style="font-weight: bold; display: block; margin-bottom: 5px;">Senha</label>
-                    <input type="password" id="senha" name="senha" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Senha:</label>
+                    <input type="password" name="senha" required class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="background-color: #164194; color: white; border: none; padding: 12px 20px; font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%;">
-                    Cadastrar Usuário
+                <button type="submit" class="btn" style="background-color: #E84910; color: white; border: none; padding: 9px 20px; font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                    Cadastrar
                 </button>
             </form>
         </div>
 
-        <!-- Lista de Usuários Cadastrados -->
-        <div class="card" style="background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h2 style="margin-top: 0; color: #164194;">Usuários Registrados</h2>
-
-            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <!-- Tabela de Usuários Cadastrados -->
+        <div class="card" style="background: #ffffff; border-radius: 6px; border: 1px solid #e2e8f0; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
                 <thead>
-                    <tr style="background-color: #f4f6f9; border-bottom: 2px solid #ddd; text-align: left;">
-                        <th style="padding: 12px;">ID</th>
-                        <th style="padding: 12px;">Usuário</th>
-                        <th style="padding: 12px; text-align: center;">Ações</th>
+                    <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: left; color: #4a5568;">
+                        <th style="padding: 12px 16px; width: 80px;">ID</th>
+                        <th style="padding: 12px 16px;">Nome de Usuário</th>
+                        <th style="padding: 12px 16px; text-align: center; width: 120px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user in usuarios %}
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 12px;">{{ user.id }}</td>
-                        <td style="padding: 12px; font-weight: bold;">{{ user.usuario }}</td>
-                        <td style="padding: 12px; text-align: center;">
-                            {% if user.usuario != 'admin' %}
-                            <form action="{{ url_for('deletar_usuario', id=user.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Deseja realmente remover este usuário?');">
-                                <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                    {% for u in usuarios %}
+                    <tr style="border-bottom: 1px solid #edf2f7;">
+                        <td style="padding: 10px 16px; color: #718096;">#{{ u.id }}</td>
+                        <td style="padding: 10px 16px; font-weight: 600; color: #2d3748;">{{ u.usuario }}</td>
+                        <td style="padding: 10px 16px; text-align: center;">
+                            <form action="{{ url_for('deletar_usuario', id=u.id) }}" method="POST" onsubmit="return confirm('Deseja realmente remover este usuário?');">
+                                <button type="submit" class="btn" style="background-color: #E84910; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
                                     Excluir
                                 </button>
                             </form>
-                            {% else %}
-                            <span style="color: #888; font-size: 0.85rem;">(Administrador Principal)</span>
-                            {% endif %}
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px; color: #a0aec0;">Nenhum usuário cadastrado.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-        <!-- Botões de Atalho Inferiores -->
-        <div style="margin-top: 25px; text-align: center; display: flex; justify-content: center; gap: 15px;">
-            <a href="{{ url_for('estoque') }}" style="color: #164194; text-decoration: none; font-weight: bold; font-size: 1rem;">
-                Voltar para o Estoque
-            </a>
-            <span style="color: #ccc;">|</span>
-            <a href="{{ url_for('logout') }}" style="color: #E84910; text-decoration: none; font-weight: bold; font-size: 1rem;">
-                Sair do Sistema
-            </a>
         </div>
 
     </div>
