@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Meu Almoxarifado SENAI</title>
+    <!-- Ícone da Aba -->
+    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="login-body">
@@ -12,7 +14,11 @@
         <!-- Lado Esquerdo: Form de Login -->
         <div class="login-left">
             <div class="login-box">
-                <div class="login-header">
+                
+                <!-- Logotipo e Título -->
+                <div class="login-header" style="text-align: center;">
+                    <!-- Tamanho aumentado na propriedade width abaixo -->
+                    <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="width: 130px; height: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                     <h2>MEU ALMOXARIFADO <span>SENAI</span></h2>
                     <p>Acesse com suas credenciais para gerenciar o estoque.</p>
                 </div>
