@@ -2,122 +2,135 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Estoque - Meu Almoxarifado SENAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - Almoxarifado SENAI</title>
+    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-brand">MEU ALMOXARIFADO <span>SENAI</span></div>
-        <div class="nav-links">
-            <a href="{{ url_for('cadastrar_produto') }}">+ Cadastrar Produto</a>
-            <a href="{{ url_for('historico') }}">Histórico de Baixas</a>
-            {% if session.get('e_admin') %}
-                <a href="{{ url_for('usuarios') }}" class="btn btn-primary" style="padding: 6px 12px;">Gerenciar Usuários</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}">Sair</a>
+
+    <!-- Cabeçalho Limpo SENAI -->
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 30px; background-color: #164194; color: white;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="height: 36px; border-radius: 4px;">
+            <h1 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Meu Almoxarifado SENAI</h1>
         </div>
-    </nav>
+        
+        <nav style="display: flex; gap: 8px; align-items: center;">
+            <a href="{{ url_for('estoque') }}" class="btn" style="background-color: #002b7a; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Estoque</a>
+            <a href="{{ url_for('historico') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Histórico</a>
+            <a href="{{ url_for('imprimir_relatorio') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Relatório</a>
+            <a href="{{ url_for('usuarios') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Usuários</a>
+            <a href="{{ url_for('logout') }}" class="btn" style="background-color: #E84910; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500;">Sair</a>
+        </nav>
+    </header>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-container">
-                {% for category, message in messages %}
-                    <div class="flash-card flash-{{ category }}">{{ message }}</div>
-                {% endfor %}
+    <div class="container" style="max-width: 1100px; margin: 25px auto; padding: 0 15px;">
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" style="padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem;">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Topo com Ações -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #164194; margin: 0; font-size: 1.35rem; font-weight: 600;">Controle de Produtos</h2>
+            <a href="{{ url_for('cadastrar_produto') }}" class="btn" style="background-color: #28a745; color: white; padding: 8px 16px; text-decoration: none; font-weight: 600; border-radius: 4px; font-size: 0.9rem;">
+                Cadastrar Novo Produto
+            </a>
+        </div>
+
+        <!-- Filtros Limpos -->
+        <div class="card" style="background: #ffffff; padding: 15px 20px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 2; min-width: 220px;">
+                <label for="buscaInput" style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Buscar por Nome:</label>
+                <input type="text" id="buscaInput" onkeyup="filtrarProdutos()" placeholder="Digite o nome do produto..." class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
             </div>
-        {% endif %}
-    {% endwith %}
-
-    <div class="container">
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem;">
-                <h2>Controle de Estoque</h2>
-                <div style="display: flex; gap: 10px;">
-                    </a>
-                   <a href="{{ url_for('imprimir_relatorio') }}" class="btn btn-primary">Relatório</a>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Formulário de Pesquisa + Filtro por Categoria -->
-            <form action="{{ url_for('estoque') }}" method="GET" class="search-bar" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" name="busca" class="form-control" placeholder="Buscar por Nome ou ID..." value="{{ busca }}" style="flex: 2; min-width: 200px;">
-                
-                <select name="categoria" class="form-control" style="flex: 1; min-width: 180px;">
+            <div style="flex: 1; min-width: 180px;">
+                <label for="categoriaFilter" style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Categoria:</label>
+                <select id="categoriaFilter" onchange="filtrarProdutos()" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
                     <option value="">Todas as Categorias</option>
-                    {% for cat in categorias %}
-                        <option value="{{ cat }}" {% if categoria_filtro == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% set categorias = [] %}
+                    {% for p in produtos %}
+                        {% if p.categoria and p.categoria not in categorias %}
+                            {% set _ = categorias.append(p.categoria) %}
+                            <option value="{{ p.categoria }}">{{ p.categoria }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
-
-                <button type="submit" class="btn btn-secondary">Pesquisar</button>
-                {% if busca or categoria_filtro %}
-                    <a href="{{ url_for('estoque') }}" class="btn btn-danger" style="text-decoration: none;">Limpar Filtros</a>
-                {% endif %}
-            </form>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Imagem</th>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Descrição</th>
-                            <th>Qtd.</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for produto in produtos %}
-                        <tr {% if produto.quantidade < 5 %}class="row-low-stock"{% endif %}>
-                            <td>#{{ produto.id }}</td>
-                            <td>
-                                <img src="{{ produto.imagem_url or 'https://via.placeholder.com/50' }}" class="img-thumb" alt="Foto">
-                            </td>
-                            <td>
-                                <strong>{{ produto.nome }}</strong>
-                                {% if produto.quantidade < 3 %}
-                                    <br><span class="badge-alert">ESTOQUE BAIXO</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.85rem; background-color: var(--senai-blue);">
-                                    {{ produto.categoria or 'Geral' }}
-                                </span>
-                            </td>
-                            <td>{{ produto.descricao or '-' }}</td>
-                            <td>
-                                <span class="btn {% if produto.quantidade < 5 %}btn-danger{% else %}btn-secondary{% endif %}" style="padding: 2px 8px; font-weight: bold;">
-                                    {{ produto.quantidade }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('editar_produto', id=produto.id) }}" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.9rem;">Gerenciar</a>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="7" style="text-align: center;">Nenhum produto encontrado.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
+        </div>
+
+        <!-- Tabela Limpa -->
+        <div class="card" style="background: #ffffff; border-radius: 6px; border: 1px solid #e2e8f0; overflow-x: auto;">
+            <table id="tabelaProdutos" style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
+                <thead>
+                    <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: left; color: #4a5568;">
+                        <th style="padding: 12px 16px; width: 60px;">Imagem</th>
+                        <th style="padding: 12px 16px;">Nome</th>
+                        <th style="padding: 12px 16px;">Categoria</th>
+                        <th style="padding: 12px 16px; text-align: center;">Quantidade</th>
+                        <th style="padding: 12px 16px; text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                    <tr class="linha-produto" data-nome="{{ p.nome.lower() }}" data-categoria="{{ p.categoria }}" style="border-bottom: 1px solid #edf2f7;">
+                        <td style="padding: 10px 16px;">
+                            {% if p.imagem_url %}
+                            <img src="{{ p.imagem_url }}" alt="{{ p.nome }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            {% else %}
+                            <span style="color: #a0aec0; font-size: 0.8rem;">Sem Imagem</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 10px 16px; font-weight: 600; color: #2d3748;">{{ p.nome }}</td>
+                        <td style="padding: 10px 16px; color: #718096;">{{ p.categoria or '-' }}</td>
+                        <td style="padding: 10px 16px; text-align: center;">
+                            <span style="background-color: #ebf8ff; padding: 4px 10px; border-radius: 4px; font-weight: 600; color: #2b6cb0; font-size: 0.85rem;">
+                                {{ p.quantidade }}
+                            </span>
+                        </td>
+                        <td style="padding: 10px 16px; text-align: center;">
+                            <a href="{{ url_for('editar_produto', id=p.id) }}" class="btn" style="background-color: #E84910; color: #ffffff; border: 1px solid #E84910; padding: 5px 12px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: 500;">
+                                Editar / Movimentar
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 24px; color: #a0aec0;">Nenhum produto cadastrado no momento.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        setTimeout(() => {
-            const flash = document.querySelector('.flash-container');
-            if (flash) {
-                flash.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                flash.style.opacity = '0';
-                flash.style.transform = 'translateY(-20px)';
-                setTimeout(() => flash.remove(), 500);
-            }
-        }, 5000);
+        function filtrarProdutos() {
+            let textoBusca = document.getElementById('buscaInput').value.toLowerCase();
+            let categoriaSelecionada = document.getElementById('categoriaFilter').value;
+            let linhas = document.querySelectorAll('.linha-produto');
+
+            linhas.forEach(linha => {
+                let nome = linha.getAttribute('data-nome');
+                let categoria = linha.getAttribute('data-categoria');
+
+                let bateuNome = nome.includes(textoBusca);
+                let bateuCategoria = (categoriaSelecionada === '' || categoria === categoriaSelecionada);
+
+                if (bateuNome && bateuCategoria) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        }
     </script>
+
 </body>
 </html>
