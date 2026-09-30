@@ -3,92 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar / Movimentar Produto - Almoxarifado SENAI</title>
+    <title>Editar Produto - Almoxarifado SENAI</title>
+    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <div class="container" style="max-width: 600px; margin-top: 30px;">
-        <h2>Editar / Movimentar Produto</h2>
+    <div class="container" style="max-width: 600px; margin: 30px auto; padding: 0 15px;">
+        <h2 style="color: #164194; margin-bottom: 20px;">Editar / Movimentar Produto</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
+              <div class="alert alert-{{ category }}" style="padding: 10px 15px; margin-bottom: 15px; border-radius: 4px; font-size: 0.9rem;">{{ message }}</div>
             {% endfor %}
           {% endif %}
         {% endwith %}
 
-        <!-- Bloco 1: Movimentação Rápida de Estoque (Dois Botões) -->
-        <div class="card" style="background: #eef2f5; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #ccc;">
-            <h3 style="margin-top: 0; color: #164194;">Movimentação Rápida de Estoque</h3>
-            <p style="font-size: 0.95rem; color: #333; margin-bottom: 15px;">
-                Estoque Atual: <strong style="font-size: 1.1rem; color: #164194;">{{ produto.quantidade }} unidades</strong>
+        <!-- Bloco 1: Movimentação -->
+        <div class="card" style="background: #f8fafc; padding: 20px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #cbd5e0;">
+            <h3 style="margin-top: 0; color: #164194; font-size: 1.1rem;">Movimentação Rápida de Estoque</h3>
+            <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 15px;">
+                Estoque Atual: <strong style="color: #164194;">{{ produto.quantidade }} unidades</strong>
             </p>
 
             <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST">
                 <input type="hidden" name="acao" value="movimentar">
 
                 <div class="form-group" style="margin-bottom: 15px;">
-                    <label for="qtd_movimento">Quantidade para movimentar:</label>
-                    <input type="number" id="qtd_movimento" name="qtd_movimento" class="form-control" min="1" value="1" required style="font-size: 1rem; padding: 8px;">
+                    <label for="qtd_movimento" style="font-weight: 600; font-size: 0.85rem;">Quantidade:</label>
+                    <input type="number" id="qtd_movimento" name="qtd_movimento" class="form-control" min="1" value="1" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <!-- Botões lado a lado: Verde para Adicionar, Vermelho para Retirar -->
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button type="submit" name="tipo_movimento" value="adicionar" class="btn" style="flex: 1; background-color: #164194; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="tipo_movimento" value="adicionar" class="btn" style="flex: 1; background-color: #28a745; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer;">
                         Adicionar
                     </button>
-                    <button type="submit" name="tipo_movimento" value="retirar" class="btn" style="flex: 1; background-color: #E84910; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+                    <button type="submit" name="tipo_movimento" value="retirar" class="btn" style="flex: 1; background-color: #d9534f; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer;">
                         Retirar
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Bloco 2: Edição dos Dados Gerais do Produto -->
-        <div class="card" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc;">
-            <h3 style="margin-top: 0;">Alterar Informações do Produto</h3>
+        <!-- Bloco 2: Edição Geral -->
+        <div class="card" style="padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0; background: white;">
+            <h3 style="margin-top: 0; font-size: 1.1rem; color: #2d3748;">Alterar Informações Gerais</h3>
 
             <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST">
                 <input type="hidden" name="acao" value="atualizar">
 
-                <div class="form-group">
-                    <label for="nome">Nome do Produto</label>
-                    <input type="text" id="nome" name="nome" class="form-control" value="{{ produto.nome }}" required>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; font-size: 0.85rem;">Nome do Produto</label>
+                    <input type="text" name="nome" class="form-control" value="{{ produto.nome }}" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <input type="text" id="categoria" name="categoria" class="form-control" value="{{ produto.categoria }}">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; font-size: 0.85rem;">Categoria</label>
+                    <input type="text" name="categoria" class="form-control" value="{{ produto.categoria }}" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <div class="form-group">
-                    <label for="quantidade">Estoque Fixo (Substituir Total Manualmente)</label>
-                    <input type="number" id="quantidade" name="quantidade" class="form-control" value="{{ produto.quantidade }}" required>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; font-size: 0.85rem;">Estoque Fixo (Substituir Total)</label>
+                    <input type="number" name="quantidade" class="form-control" value="{{ produto.quantidade }}" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <div class="form-group">
-                    <label for="imagem_url">URL da Imagem</label>
-                    <input type="text" id="imagem_url" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; font-size: 0.85rem;">URL da Imagem</label>
+                    <input type="text" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <div class="form-group">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" class="form-control" rows="3">{{ produto.descricao }}</textarea>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; font-size: 0.85rem;">Descrição</label>
+                    <textarea name="descricao" class="form-control" rows="3" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">{{ produto.descricao }}</textarea>
                 </div>
 
-                <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Salvar Alterações do Produto</button>
+                <button type="submit" class="btn" style="width: 100%; background-color: #4a5568; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px;">Salvar Alterações</button>
             </form>
 
             <form action="{{ url_for('editar_produto', id=produto.id) }}" method="POST" style="margin-top: 15px;" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
                 <input type="hidden" name="acao" value="excluir">
-                <button type="submit" class="btn btn-danger" style="width: 100%; background-color: #E84910; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">Excluir Produto</button>
+                <button type="submit" class="btn" style="width: 100%; background-color: #e53e3e; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: 500;">Excluir Produto</button>
             </form>
         </div>
 
         <div style="margin-top: 20px; text-align: center;">
-            <a href="{{ url_for('estoque') }}" class="btn btn-link">Voltar ao Estoque</a>
+            <a href="{{ url_for('estoque') }}" style="color: #164194; text-decoration: none; font-weight: 500;">Voltar ao Estoque</a>
         </div>
     </div>
 
