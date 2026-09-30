@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuário - Almoxarifado SENAI</title>
+    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container" style="max-width: 500px; margin: 40px auto; padding: 0 15px;">
+        <h2 style="color: #164194; margin-bottom: 20px;">Editar Usuário: {{ usuario_item.usuario }}</h2>
+
+        <div class="card" style="background: white; padding: 25px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <form action="{{ url_for('editar_usuario', id=usuario_item.id) }}" method="POST">
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568;">Perfil / Permissão:</label>
+                    <select name="tipo" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; margin-top: 5px;">
+                        <option value="padrao" {% if usuario_item.tipo == 'padrao' %}selected{% endif %}>Usuário Padrão</option>
+                        <option value="admin" {% if usuario_item.tipo == 'admin' %}selected{% endif %}>Administrador</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568;">Nova Senha (deixe em branco para manter a atual):</label>
+                    <input type="password" name="nova_senha" class="form-control" placeholder="Digite apenas se desejar alterar" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; margin-top: 5px;">
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; background-color: #164194; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer;">
+                    Salvar Alterações
+                </button>
+            </form>
+
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="{{ url_for('usuarios') }}" style="color: #718096; text-decoration: none; font-size: 0.9rem;">Cancelar e Voltar</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

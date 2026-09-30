@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import mysql.connector
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'senai_chave_secreta'
@@ -29,6 +30,7 @@ def inicializar_banco():
         conn = get_db()
         cursor = conn.cursor()
 
+        # Tabela de Usuários
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,19 +40,7 @@ def inicializar_banco():
             )
         """)
 
-        # Adiciona a coluna 'tipo' caso a tabela já existisse sem ela
-        try:
-            cursor.execute("ALTER TABLE usuarios ADD COLUMN tipo VARCHAR(20) DEFAULT 'padrao'")
-        except:
-            pass
-
-        # Garante que o utilizador 'admin' existe e é do tipo 'admin'
-        cursor.execute("SELECT * FROM usuarios WHERE usuario = 'admin'")
-        if not cursor.fetchone():
-            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES ('admin', 'admin', 'admin')")
-        else:
-            cursor.execute("UPDATE usuarios SET tipo = 'admin' WHERE usuario = 'admin'")
-
+        # Tabela de Produtos
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS produtos (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,16 +52,26 @@ def inicializar_banco():
             )
         """)
 
+        # Tabela de Movimentações com Integridade Referencial (Foreign Keys)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS movimentacoes (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 produto_id INT,
                 usuario_id INT,
                 quantidade_retirada INT,
-                data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE SET NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
             )
         """)
 
+        # Criação do usuário admin padrão com senha encriptada
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = 'admin'")
+        admin_user = cursor.fetchone()
+        if not admin_user:
+            senha_hash = generate_password_hash('admin')
+            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES ('admin', %s, 'admin')", (senha_hash,))
+        
         conn.commit()
         cursor.close()
         conn.close()
@@ -79,6 +79,8 @@ def inicializar_banco():
         print(f"Erro ao inicializar banco: {e}")
 
 inicializar_banco()
+
+# --- DECORADORES DE PROTEÇÃO ---
 
 def login_required(f):
     @wraps(f)
@@ -88,6 +90,17 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('tipo') != 'admin':
+            flash('Acesso negado! Apenas administradores têm permissão para esta funcionalidade.', 'danger')
+            return redirect(url_for('estoque'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --- ROTAS DE AUTENTICAÇÃO ---
 
 @app.route('/')
 def index():
@@ -101,12 +114,13 @@ def login():
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE usuario = %s AND senha = %s", (usuario, senha))
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = %s", (usuario,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if user:
+        # Valida a senha encriptada (com compatibilidade temporária para texto puro caso exista na BD)
+        if user and (check_password_hash(user['senha'], senha) or user['senha'] == senha):
             session['user_id'] = user['id']
             session['usuario'] = user['usuario']
             session['tipo'] = user.get('tipo', 'padrao')
@@ -122,6 +136,8 @@ def logout():
     session.clear()
     flash('Sessão encerrada com sucesso.', 'info')
     return redirect(url_for('login'))
+
+# --- ROTAS DO ESTOQUE ---
 
 @app.route('/estoque')
 @login_required
@@ -209,12 +225,15 @@ def editar_produto(id):
                         flash('Quantidade indisponível em estoque.', 'danger')
 
         elif acao == 'excluir':
-            cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
-            conn.commit()
-            flash('Produto removido.', 'success')
-            cursor.close()
-            conn.close()
-            return redirect(url_for('estoque'))
+            if session.get('tipo') != 'admin':
+                flash('Apenas administradores podem excluir produtos.', 'danger')
+            else:
+                cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
+                conn.commit()
+                flash('Produto removido do sistema.', 'success')
+                cursor.close()
+                conn.close()
+                return redirect(url_for('estoque'))
 
         cursor.close()
         conn.close()
@@ -233,10 +252,10 @@ def historico():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT m.*, p.nome AS produto_nome, u.usuario AS usuario_nome
+        SELECT m.*, COALESCE(p.nome, 'Produto Removido') AS produto_nome, COALESCE(u.usuario, 'Usuário Removido') AS usuario_nome
         FROM movimentacoes m
-        JOIN produtos p ON m.produto_id = p.id
-        JOIN usuarios u ON m.usuario_id = u.id
+        LEFT JOIN produtos p ON m.produto_id = p.id
+        LEFT JOIN usuarios u ON m.usuario_id = u.id
         ORDER BY m.data_movimentacao DESC
     """)
     movimentacoes = cursor.fetchall()
@@ -255,8 +274,11 @@ def imprimir_relatorio():
     conn.close()
     return render_template('relatorio.html', produtos=produtos)
 
+# --- ROTAS DE GERENCIAMENTO DE USUÁRIOS (RESTRITAS A ADMIN) ---
+
 @app.route('/usuarios', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def usuarios():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -266,8 +288,10 @@ def usuarios():
         senha = request.form['senha'].strip()
         tipo = request.form.get('tipo', 'padrao')
 
+        senha_hash = generate_password_hash(senha)
+
         try:
-            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES (%s, %s, %s)", (usuario, senha, tipo))
+            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo) VALUES (%s, %s, %s)", (usuario, senha_hash, tipo))
             conn.commit()
             flash('Usuário cadastrado com sucesso!', 'success')
         except Exception as e:
@@ -280,16 +304,51 @@ def usuarios():
 
     return render_template('usuarios.html', usuarios=lista_usuarios)
 
+@app.route('/usuarios/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def editar_usuario(id):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        tipo = request.form.get('tipo', 'padrao')
+        nova_senha = request.form.get('nova_senha', '').strip()
+
+        if nova_senha:
+            senha_hash = generate_password_hash(nova_senha)
+            cursor.execute("UPDATE usuarios SET tipo = %s, senha = %s WHERE id = %s", (tipo, senha_hash, id))
+        else:
+            cursor.execute("UPDATE usuarios SET tipo = %s WHERE id = %s", (tipo, id))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        flash('Usuário atualizado com sucesso!', 'success')
+        return redirect(url_for('usuarios'))
+
+    cursor.execute("SELECT id, usuario, tipo FROM usuarios WHERE id = %s", (id,))
+    usuario_item = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return render_template('editar_usuario.html', usuario_item=usuario_item)
+
 @app.route('/usuarios/deletar/<int:id>', methods=['POST'])
 @login_required
+@admin_required
 def deletar_usuario(id):
+    if id == session.get('user_id'):
+        flash('Não é possível remover a sua própria conta enquanto estiver ligado.', 'danger')
+        return redirect(url_for('usuarios'))
+
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
     conn.commit()
     cursor.close()
     conn.close()
-    flash('Usuário removido.', 'success')
+    flash('Usuário removido com sucesso.', 'success')
     return redirect(url_for('usuarios'))
 
 if __name__ == '__main__':
