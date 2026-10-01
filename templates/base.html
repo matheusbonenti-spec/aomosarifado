@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almoxarifado SENAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Script pra carregar o tema antes da página renderizar (evita piscar a tela branca) -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('dark-mode');
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <!-- NAVBAR FIXA NO TOPO -->
+    <header class="header">
+        <div class="logo-area">
+            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" class="logo-img">
+            <h1 class="header-title">Almoxarifado</h1>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('estoque') }}" class="btn-nav">Estoque</a>
+            <a href="{{ url_for('usuarios') }}" class="btn-nav">Usuários</a>
+            <a href="{{ url_for('historico') }}" class="btn-nav">Histórico</a>
+            <a href="{{ url_for('relatorio') }}" class="btn-nav">Relatório</a>
+            <a href="{{ url_for('perfil') }}" class="btn-nav">Perfil</a>
+            
+            <!-- BOTÃO DE MUDAR DE TEMA -->
+            <button class="btn-theme-toggle" id="themeToggleBtn" type="button">
+                🌙 Escuro
+            </button>
+
+            <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+        </nav>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL DAS PÁGINAS -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="footer">
+        <p>&copy; Almoxarifado SENAI - Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- SCRIPT DE ALTERNÂNCIA E PERSISTÊNCIA DO MODO ESCURO -->
+    <script>
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const body = document.body;
+
+        // Função para atualizar o texto/ícone do botão
+        function updateButtonText() {
+            if (body.classList.contains('dark-mode')) {
+                themeBtn.textContent = '☀️ Claro';
+            } else {
+                themeBtn.textContent = '🌙 Escuro';
+            }
+        }
+
+        // Verifica o tema salvo ao carregar
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        updateButtonText();
+
+        // Clique no botão
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+            
+            updateButtonText();
+        });
+    </script>
+</body>
+</html>

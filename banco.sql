@@ -1,37 +1,43 @@
-CREATE DATABASE IF NOT EXISTS almoxarifado_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE almoxarifado_db;
+-- 1. Criação do Banco de Dados
+CREATE DATABASE IF NOT EXISTS aomosarifado 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
 
+USE aomosarifado;
+
+-- 2. Tabela de Usuários
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     usuario VARCHAR(50) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    e_admin BOOLEAN NOT NULL DEFAULT FALSE
+    perfil VARCHAR(20) NOT NULL DEFAULT 'Padrão',
+    foto VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 3. Tabela de Produtos (Estoque)
 CREATE TABLE IF NOT EXISTS produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    categoria VARCHAR(50) NOT NULL DEFAULT 'Ferramentas',
-    imagem_url TEXT,
-    descricao TEXT,
-    quantidade INT NOT NULL DEFAULT 0
+    quantidade INT NOT NULL DEFAULT 0,
+    categoria VARCHAR(50) DEFAULT 'Geral',
+    descricao TEXT DEFAULT NULL,
+    imagem VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela para registrar o histórico de retiradas/baixas
-CREATE TABLE IF NOT EXISTS movimentacoes (
+-- 4. Tabela de Histórico de Movimentações
+CREATE TABLE IF NOT EXISTS historico (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    produto_id INT NOT NULL,
-    usuario_id INT NOT NULL,
-    quantidade_retirada INT NOT NULL,
-    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    usuario_nome VARCHAR(100) NOT NULL,
+    produto_nome VARCHAR(100) NOT NULL,
+    acao VARCHAR(50) NOT NULL, -- Ex: "Adicionou", "Removeu", "Editou"
+    quantidade INT NOT NULL,
+    data_movimentacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insere o administrador padrão (usuario: admin | senha: admin123)
-INSERT INTO usuarios (nome, usuario, senha, e_admin)
-SELECT 'Administrador SENAI', 'admin', 'scrypt:32768:8:1$m9g52J4o8d4K$5dbbfcb6e74b122dd70df83eb2e5d95e2df40bbf9b2e8bfbc5ecf235941c6183a31c50e410f9e9cf2efb2512fefc2a937a0980590a2ffbf296d38e3a2e0a2948', TRUE
-WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE usuario = 'admin');
-
-UPDATE produtos SET categoria = 'Ferramentas' WHERE categoria IS NULL OR categoria = '';
+-- 5. Inserir um Usuário Administrador Padrão (se ainda não existir)
+-- Login: admin | Senha: 123
+INSERT IGNORE INTO usuarios (id, nome, usuario, senha, perfil) 
+VALUES (1, 'Administrador SENAI', 'admin', '123', 'Administrador');

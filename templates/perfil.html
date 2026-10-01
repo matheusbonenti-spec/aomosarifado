@@ -6,71 +6,125 @@
     <title>Meu Perfil - Almoxarifado SENAI</title>
     <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Script de pré-carregamento para evitar piscar tela branca -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('dark-mode');
+            });
+        }
+    </script>
 </head>
 <body>
 
-    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 30px; background-color: #164194; color: white;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="height: 36px; border-radius: 4px;">
-            <h1 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Meu Almoxarifado SENAI</h1>
+    <!-- NAVBAR FIXA NO TOPO -->
+    <header class="header">
+        <div class="logo-area">
+            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" class="logo-img">
+            <h1 class="header-title">Almoxarifado</h1>
         </div>
-        
-        <nav style="display: flex; gap: 8px; align-items: center;">
-            <a href="{{ url_for('estoque') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Estoque</a>
-            <a href="{{ url_for('historico') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Histórico</a>
-            <a href="{{ url_for('perfil') }}" class="btn" style="background-color: #002b7a; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px;">Meu Perfil</a>
-            <a href="{{ url_for('logout') }}" class="btn" style="background-color: #d9534f; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px;">Sair</a>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('estoque') }}" class="btn-nav">Estoque</a>
+            <a href="{{ url_for('usuarios') }}" class="btn-nav">Usuários</a>
+            <a href="{{ url_for('historico') }}" class="btn-nav">Histórico</a>
+            <a href="{{ url_for('imprimir_relatorio') }}" class="btn-nav">Relatório</a>
+            <a href="{{ url_for('perfil') }}" class="btn-nav btn-active">Perfil</a>
+            
+            <!-- BOTÃO DE MUDAR DE TEMA -->
+            <button class="btn-theme-toggle" id="themeToggleBtn" type="button">
+                🌙 Escuro
+            </button>
+
+            <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
         </nav>
     </header>
 
-    <div class="container" style="max-width: 500px; margin: 40px auto; padding: 0 15px;">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }}" style="padding: 10px 15px; margin-bottom: 20px; border-radius: 4px;">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="container">
+        <div class="page-header">
+            <h2>Meu Perfil</h2>
+        </div>
 
-        <div class="card" style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
-            
-            <!-- Foto de Perfil Atual -->
-            <div style="margin-bottom: 20px;">
-                {% if usuario_item.foto_perfil and usuario_item.foto_perfil != 'default_avatar.png' %}
-                    <img src="{{ url_for('static', filename='uploads/perfis/' + usuario_item.foto_perfil) }}" alt="Foto de perfil" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid #164194; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                {% else %}
-                    <div style="width: 110px; height: 110px; border-radius: 50%; background-color: #cbd5e0; color: #4a5568; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; border: 3px solid #164194;">
-                        {{ usuario_item.usuario[0] | upper }}
-                    </div>
-                {% endif %}
-                <h2 style="color: #164194; margin: 10px 0 2px 0;">{{ usuario_item.usuario }}</h2>
-                <span style="background-color: #e2e8f0; color: #4a5568; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">{{ usuario_item.tipo | upper }}</span>
-            </div>
+        <div class="card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 15px; border-radius: 6px; background-color: rgba(22, 65, 148, 0.1); border: 1px solid var(--border-color);">
+                      {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
 
-            <form action="{{ url_for('perfil') }}" method="POST" enctype="multipart/form-data" style="text-align: left;">
-                
-                <div style="margin-bottom: 15px;">
-                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Alterar Foto de Perfil:</label>
-                    <input type="file" name="foto_perfil" accept="image/*" class="form-control" style="width: 100%; padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px;">
+            <form method="POST" action="{{ url_for('perfil') }}" enctype="multipart/form-data">
+                <!-- Foto de Perfil Atual -->
+                <div class="form-group" style="text-align: center; margin-bottom: 20px;">
+                    {% if usuario and usuario.foto %}
+                        <img src="{{ url_for('static', filename='uploads/' + usuario.foto) }}" alt="Foto de Perfil" class="user-avatar" style="width: 100px !important; height: 100px !important; max-width: 100px !important; max-height: 100px !important; border-radius: 50%; object-fit: cover; border: 3px solid var(--senai-blue);">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Foto Padrão" class="user-avatar" style="width: 100px !important; height: 100px !important; max-width: 100px !important; max-height: 100px !important; border-radius: 50%; object-fit: cover; border: 3px solid var(--senai-blue);">
+                    {% endif %}
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Alterar Senha:</label>
-                    <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" class="form-control" value="{{ usuario.nome if usuario else '' }}" required>
                 </div>
 
-                <button type="submit" class="btn" style="width: 100%; background-color: #164194; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer;">
-                    Salvar Alterações
-                </button>
+                <div class="form-group">
+                    <label for="usuario">Usuário / Login</label>
+                    <input type="text" id="usuario" name="usuario" class="form-control" value="{{ usuario.usuario if usuario else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Nova Senha (deixe em branco se não quiser alterar)</label>
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label for="foto">Alterar Foto de Perfil</label>
+                    <input type="file" id="foto" name="foto" class="form-control" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Salvar Alterações</button>
             </form>
         </div>
     </div>
 
+    <footer class="footer">
+        <p>&copy; Almoxarifado SENAI - Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- SCRIPT DO MODO ESCURO -->
+    <script>
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const body = document.body;
+
+        function updateButtonText() {
+            if (body.classList.contains('dark-mode')) {
+                themeBtn.textContent = '☀️ Claro';
+            } else {
+                themeBtn.textContent = '🌙 Escuro';
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        updateButtonText();
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+            updateButtonText();
+        });
+    </script>
 </body>
-
-<footer style="text-align: center; padding: 25px 0; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color);">
-    <p>© 2026 <strong>SENAI</strong> - Sistema de Gestão de Almoxarifado v2.0</p>
-    <p style="font-size: 0.78rem; margin-top: 4px; opacity: 0.8;">Desenvolvido com suor e lagrimas do Bonenti</p>
-</footer>
-
 </html>

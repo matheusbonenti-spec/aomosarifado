@@ -1,13 +1,21 @@
 import os
 import uuid
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, session
 import mysql.connector
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = 'senai_chave_secreta'
+app.secret_key = 'chave_secreta_almoxarifado'
+
+# Função para conectar ao MySQL
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="aomosarifado"
+    )
 
 # --- CONFIGURAÇÃO DE UPLOAD DE IMAGENS DE PERFIL ---
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'perfis')

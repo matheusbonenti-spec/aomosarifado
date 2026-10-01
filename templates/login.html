@@ -3,39 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Meu Almoxarifado SENAI</title>
-    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
+    <title>Login - Almoxarifado SENAI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Script para carregar o modo escuro sem piscar a tela branca -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('dark-mode');
+            });
+        }
+    </script>
 </head>
 <body class="login-body">
 
-    <!-- Aplicação do Tema Salvo -->
-    <script>
-        if (localStorage.getItem('tema') === 'escuro') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
-
-    <!-- Botão de Modo Noturno Flutuante para o Login -->
-    <button class="btn-theme-login" onclick="alternarTema()" title="Alternar Modo Escuro">
-        Modo Batman
+    <!-- Botão Flutuante de Modo Escuro -->
+    <button class="btn-theme-login" id="themeToggleBtn" type="button">
+        🌙 Escuro
     </button>
 
     <div class="login-container">
-        <!-- Lado Esquerdo: Form de Login -->
+        <!-- Lado Esquerdo: Formulário de Login -->
         <div class="login-left">
             <div class="login-box">
-                
-                <div class="login-header" style="text-align: center;">
-                    <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="width: 130px; height: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; border-radius: 6px;">
+                <div class="login-header">
+                    <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" class="logo-img" style="height: 45px; margin-bottom: 15px;">
                     <h2>MEU ALMOXARIFADO <span>SENAI</span></h2>
                     <p>Acesse com suas credenciais para gerenciar o estoque.</p>
                 </div>
 
+                <!-- Mensagens do Flash -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                   {% if messages %}
                     {% for category, message in messages %}
-                      <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 15px; border-radius: 6px; font-size: 0.9rem; background-color: #f8d7da; color: #000000; border: 1px solid #f5c6cb;">
+                      <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 15px; border-radius: 6px; font-size: 0.88rem; background-color: rgba(232, 73, 16, 0.1); border: 1px solid var(--senai-orange); color: var(--text-main);">
                           {{ message }}
                       </div>
                     {% endfor %}
@@ -43,38 +45,58 @@
                 {% endwith %}
 
                 <form action="{{ url_for('login') }}" method="POST">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 15px;">
                         <label for="usuario">Usuário</label>
-                        <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Digite seu usuário" required autofocus>
+                        <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Digite seu usuário" required autocomplete="username">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <label for="senha">Senha</label>
-                        <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha" required>
+                        <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha" required autocomplete="current-password">
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Entrar no Sistema</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">Entrar no Sistema</button>
                 </form>
             </div>
         </div>
 
-        <!-- Lado Direito: Imagem SENAI com Gradiente -->
-        <div class="login-right" style="background-image: url('{{ url_for('static', filename='senai.jpg') }}');">
+        <!-- Lado Direito: Imagem do SENAI e Mensagem -->
+        <div class="login-right">
             <div class="overlay-gradient"></div>
             <div class="login-right-content">
-                <h3>Gestão e Eficiência Industrial</h3>
-                <p>Plataforma centralizada para controle de insumos, ferramentas e materiais do SENAI.</p>
+                <h3>Gestão Inteligente de Estoque</h3>
+                <p>Controle de ferramentas, materiais e insumos com rapidez, segurança e precisão para os laboratórios SENAI.</p>
             </div>
         </div>
     </div>
 
-    <!-- Script Global do Alternador de Tema -->
+    <!-- Script de Alternância e Persistência do Modo Escuro -->
     <script>
-        function alternarTema() {
-            document.body.classList.toggle('dark-mode');
-            const temaAtual = document.body.classList.contains('dark-mode') ? 'escuro' : 'claro';
-            localStorage.setItem('tema', temaAtual);
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const body = document.body;
+
+        function updateButtonText() {
+            if (body.classList.contains('dark-mode')) {
+                themeBtn.textContent = '☀️ Claro';
+            } else {
+                themeBtn.textContent = '🌙 Escuro';
+            }
         }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        updateButtonText();
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+            updateButtonText();
+        });
     </script>
 </body>
 </html>

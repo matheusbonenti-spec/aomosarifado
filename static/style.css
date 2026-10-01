@@ -179,6 +179,7 @@ body.dark-mode .login-header h2 span {
 .login-right {
     flex: 1;
     position: relative;
+    background-image: url('senai.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
