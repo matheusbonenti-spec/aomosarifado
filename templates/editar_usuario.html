@@ -9,35 +9,85 @@
 </head>
 <body>
 
-    <div class="container" style="max-width: 500px; margin: 40px auto; padding: 0 15px;">
-        <h2 style="color: #164194; margin-bottom: 20px;">Editar Usuário: {{ usuario_item.usuario }}</h2>
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 30px; background-color: #164194; color: white;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="{{ url_for('static', filename='logo_senai.jpg') }}" alt="Logo SENAI" style="height: 36px; border-radius: 4px;">
+            <h1 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Meu Almoxarifado SENAI</h1>
+        </div>
+        
+        <nav style="display: flex; gap: 8px; align-items: center;">
+            <a href="{{ url_for('estoque') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Estoque</a>
+            <a href="{{ url_for('historico') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Histórico</a>
+            <a href="{{ url_for('imprimir_relatorio') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Relatórios</a>
+            <a href="{{ url_for('perfil') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Meu Perfil</a>
+            {% if session.get('tipo') == 'admin' %}
+            <a href="{{ url_for('usuarios') }}" class="btn" style="background-color: #002b7a; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px;">Usuários</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn" style="background-color: #E84910; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px;">Sair</a>
+        </nav>
+    </header>
 
-        <div class="card" style="background: white; padding: 25px; border-radius: 6px; border: 1px solid #e2e8f0;">
-            <form action="{{ url_for('editar_usuario', id=usuario_item.id) }}" method="POST">
+    <div class="container" style="max-width: 500px; margin: 40px auto; padding: 0 15px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" style="padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem;">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="card" style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <h2 style="color: #164194; margin-top: 0; margin-bottom: 20px; font-size: 1.3rem; text-align: center;">Editar Usuário</h2>
+
+            <!-- Exibição da foto atual -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                {% if usuario_item.foto_perfil and usuario_item.foto_perfil != 'default_avatar.png' %}
+                    <img src="{{ url_for('static', filename='uploads/perfis/' + usuario_item.foto_perfil) }}" alt="Foto de Perfil" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #164194; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                {% else %}
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background-color: #cbd5e0; color: #4a5568; display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; border: 3px solid #164194;">
+                        {{ usuario_item.usuario[0] | upper }}
+                    </div>
+                {% endif %}
+                <h3 style="margin: 10px 0 0 0; color: #2d3748; font-size: 1.1rem;">{{ usuario_item.usuario }}</h3>
+            </div>
+
+            <form action="{{ url_for('editar_usuario', id=usuario_item.id) }}" method="POST" enctype="multipart/form-data">
                 
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568;">Perfil / Permissão:</label>
-                    <select name="tipo" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; margin-top: 5px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Alterar Foto de Perfil:</label>
+                    <input type="file" name="foto_perfil" accept="image/*" class="form-control" style="width: 100%; padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.85rem; background: white;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Perfil / Permissões:</label>
+                    <select name="tipo" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem;">
                         <option value="padrao" {% if usuario_item.tipo == 'padrao' %}selected{% endif %}>Usuário Padrão</option>
                         <option value="admin" {% if usuario_item.tipo == 'admin' %}selected{% endif %}>Administrador</option>
                     </select>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568;">Nova Senha (deixe em branco para manter a atual):</label>
-                    <input type="password" name="nova_senha" class="form-control" placeholder="Digite apenas se desejar alterar" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; margin-top: 5px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: #4a5568; display: block; margin-bottom: 5px;">Nova Senha:</label>
+                    <input type="password" name="nova_senha" placeholder="Deixe em branco para manter a atual" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px;">
                 </div>
 
-                <button type="submit" class="btn" style="width: 100%; background-color: #164194; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer;">
-                    Salvar Alterações
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn" style="flex: 1; background-color: #164194; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 4px; cursor: pointer; text-align: center;">
+                        Salvar Alterações
+                    </button>
+                    <a href="{{ url_for('usuarios') }}" class="btn" style="background-color: #718096; color: white; text-decoration: none; padding: 10px 15px; font-weight: 600; border-radius: 4px; text-align: center;">
+                        Cancelar
+                    </a>
+                </div>
             </form>
-
-            <div style="margin-top: 15px; text-align: center;">
-                <a href="{{ url_for('usuarios') }}" style="color: #718096; text-decoration: none; font-size: 0.9rem;">Cancelar e Voltar</a>
-            </div>
         </div>
     </div>
 
 </body>
+
+<footer style="text-align: center; padding: 25px 0; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color);">
+    <p>© 2026 <strong>SENAI</strong> - Sistema de Gestão de Almoxarifado v2.0</p>
+    <p style="font-size: 0.78rem; margin-top: 4px; opacity: 0.8;">Desenvolvido com suor e lagrimas do Bonenti</p>
+</footer>
+
 </html>
