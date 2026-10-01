@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
     --senai-blue: #164194;
@@ -6,91 +6,242 @@
     --senai-orange: #E84910;
     --senai-orange-hover: #c73a0a;
     --bg-main: #f8fafc;
-    --card-bg: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.92);
     --text-main: #1e293b;
     --text-muted: #64748b;
     --border-color: #e2e8f0;
     --radius: 8px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --transition: all 0.2s ease-in-out;
+    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --dot-color: rgba(22, 65, 148, 0.12);
 }
 
-/* MODO ESCURO */
+/* VARIÁVEIS DE MODO ESCURO */
 body.dark-mode {
-    --bg-main: #0f172a;
-    --card-bg: #1e293b;
+    --bg-main: #0b1120;
+    --card-bg: rgba(30, 41, 59, 0.92);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border-color: #334155;
-
-    background-color: #0f172a;
-    background-image: 
-        radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px), 
-        linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
-    color: var(--text-main);
+    --dot-color: rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode::before {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0) 70%);
-}
-
-body.dark-mode::after {
-    background: radial-gradient(circle, rgba(232, 73, 16, 0.2) 0%, rgba(15, 23, 42, 0) 70%);
-}
-
-/* ESTILOS GERAIS */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* ==========================================================
+   FUNDO COM PATTERN DE BOLINHAS E BRILHOS NAS PONTAS (GLOWS)
+   ========================================================== */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-main);
-    background-image: 
-        radial-gradient(#cbd5e0 1.2px, transparent 1.2px), 
-        linear-gradient(to right, rgba(22, 65, 148, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(22, 65, 148, 0.03) 1px, transparent 1px);
-    background-size: 24px 24px, 48px 48px, 48px 48px;
-    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.5;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
+
+    /* Padrão de Bolinhas no Fundo Todo */
+    background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
 }
 
-body::before {
-    content: "";
+/* Pontos Brilhantes nos Cantos da Tela */
+body::before, body::after {
+    content: '';
     position: fixed;
-    top: -100px;
-    left: -100px;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(22, 65, 148, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
     border-radius: 50%;
-    z-index: -1;
+    filter: blur(100px);
     pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+    transition: opacity 0.3s ease;
 }
 
+/* Brilho Azul no Canto Superior Esquerdo */
+body::before {
+    top: -120px;
+    left: -120px;
+    background: radial-gradient(circle, #164194 0%, rgba(22, 65, 148, 0) 70%);
+}
+
+/* Brilho Laranja no Canto Inferior Direito */
 body::after {
-    content: "";
-    position: fixed;
-    bottom: -100px;
-    right: -100px;
-    width: 450px;
-    height: 450px;
-    background: radial-gradient(circle, rgba(232, 73, 16, 0.10) 0%, rgba(255, 255, 255, 0) 70%);
-    border-radius: 50%;
-    z-index: -1;
-    pointer-events: none;
+    bottom: -120px;
+    right: -120px;
+    background: radial-gradient(circle, #E84910 0%, rgba(232, 73, 16, 0) 70%);
 }
 
-/* HEADER & NAV */
+body.dark-mode::before {
+    opacity: 0.7;
+    background: radial-gradient(circle, #3b82f6 0%, rgba(59, 130, 246, 0) 70%);
+}
+
+body.dark-mode::after {
+    opacity: 0.7;
+    background: radial-gradient(circle, #f97316 0%, rgba(249, 115, 22, 0) 70%);
+}
+
+/* ==========================================================
+   BOTÃO DE MODO NOTURNO
+   ========================================================== */
+.btn-theme-login {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.btn-theme-login:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================
+   TELA DE LOGIN
+   ========================================================== */
+body.login-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.login-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    z-index: 1;
+}
+
+.login-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    transition: background-color 0.3s ease;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 360px;
+}
+
+.login-header h2 {
+    color: var(--senai-blue);
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.login-header h2 span {
+    color: var(--senai-orange);
+    display: block;
+}
+
+body.dark-mode .login-header h2 {
+    color: #60a5fa;
+}
+
+body.dark-mode .login-header h2 span {
+    color: #f97316;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-bottom: 25px;
+}
+
+.login-right {
+    flex: 1;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: flex-end;
+    padding: 60px 50px;
+    color: #ffffff;
+}
+
+.overlay-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(15, 23, 42, 0.85) 100%);
+    z-index: 1;
+}
+
+.login-right-content {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+    text-align: left;
+}
+
+.login-right-content h3 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.login-right-content p {
+    font-size: 0.98rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+}
+
+@media (max-width: 850px) {
+    body.login-body {
+        overflow: auto;
+    }
+    .login-container {
+        flex-direction: column-reverse;
+        height: auto;
+        min-height: 100vh;
+    }
+    .login-right {
+        min-height: 250px;
+        padding: 30px 20px;
+    }
+    .login-right-content h3 {
+        font-size: 1.4rem;
+    }
+    .login-left {
+        padding: 40px 20px;
+    }
+}
+
+/* ==========================================================
+   ESTILOS DAS DEMAIS PÁGINAS DO SISTEMA
+   ========================================================== */
 .header {
     background: linear-gradient(135deg, var(--senai-blue) 0%, var(--senai-blue-dark) 100%);
     padding: 12px 30px;
@@ -99,6 +250,8 @@ body::after {
     align-items: center;
     box-shadow: var(--shadow-md);
     color: white;
+    position: relative;
+    z-index: 10;
 }
 
 .logo-area {
@@ -124,33 +277,25 @@ body::after {
     align-items: center;
 }
 
-.btn-nav {
+.btn-nav, .btn-theme-toggle {
     background-color: transparent;
     color: white;
     border: 1px solid rgba(255,255,255,0.25);
     padding: 7px 14px;
     text-decoration: none;
     font-size: 0.88rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.btn-nav:hover {
-    background-color: rgba(255,255,255,0.15);
+.btn-nav:hover, .btn-theme-toggle:hover {
+    background-color: rgba(255,255,255,0.2);
 }
 
 .btn-active {
     background-color: #002b7a !important;
     border-color: transparent !important;
-}
-
-.btn-theme-toggle {
-    background: rgba(255,255,255,0.18);
-    color: white;
-    padding: 7px 14px;
-    font-size: 0.88rem;
-}
-
-.btn-theme-toggle:hover {
-    background: rgba(255,255,255,0.3);
 }
 
 .btn-logout {
@@ -159,24 +304,20 @@ body::after {
     padding: 7px 14px;
     text-decoration: none;
     font-size: 0.88rem;
+    border-radius: var(--radius);
 }
 
 .btn-logout:hover {
     background-color: var(--senai-orange-hover);
 }
 
-/* CONTAINER & CARDS */
 .container {
     max-width: 900px;
     margin: 25px auto;
     padding: 0 15px;
     flex: 1;
-    animation: fadeInUp 0.3s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    position: relative;
+    z-index: 1;
 }
 
 .page-header h2 {
@@ -191,24 +332,12 @@ body.dark-mode .page-header h2 {
 
 .card {
     background-color: var(--card-bg);
+    backdrop-filter: blur(8px);
     border-radius: var(--radius);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     padding: 20px;
     margin-bottom: 25px;
-}
-
-/* FORMULÁRIO */
-.form-grid {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-}
-
-.form-group {
-    flex: 1;
-    min-width: 180px;
 }
 
 .form-group label {
@@ -221,7 +350,7 @@ body.dark-mode .page-header h2 {
 
 .form-control {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     font-size: 0.9rem;
@@ -236,193 +365,21 @@ body.dark-mode .page-header h2 {
     box-shadow: 0 0 0 3px rgba(22, 65, 148, 0.15);
 }
 
-.file-input {
-    padding: 5px;
-    font-size: 0.82rem;
-}
-
 .btn-primary {
     background-color: var(--senai-orange);
     color: white;
-    padding: 9px 20px;
+    padding: 10px 20px;
     font-weight: 600;
-    width: 100%;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .btn-primary:hover {
     background-color: var(--senai-orange-hover);
 }
 
-/* PESQUISA */
-.search-bar {
-    margin-bottom: 15px;
-}
-
-.input-search {
-    padding: 10px 14px;
-    height: 42px;
-}
-
-/* TABELA */
-.table-card {
-    padding: 0;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.92rem;
-}
-
-th {
-    background-color: rgba(0,0,0,0.02);
-    color: var(--text-muted);
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border-color);
-}
-
-body.dark-mode th {
-    background-color: rgba(255,255,255,0.03);
-}
-
-td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-tbody tr:hover {
-    background-color: rgba(0,0,0,0.015);
-}
-
-body.dark-mode tbody tr:hover {
-    background-color: rgba(255,255,255,0.03);
-}
-
-.td-id {
-    color: var(--text-muted);
-}
-
-.td-user {
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.avatar-img {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.avatar-fallback {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background-color: var(--border-color);
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.badge-admin {
-    background-color: rgba(232, 73, 16, 0.12);
-    color: var(--senai-orange);
-}
-
-.badge-padrao {
-    background-color: rgba(22, 65, 148, 0.12);
-    color: var(--senai-blue);
-}
-
-body.dark-mode .badge-padrao {
-    color: #60a5fa;
-    background-color: rgba(96, 165, 250, 0.15);
-}
-
-.action-buttons {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-}
-
-.btn-action-edit {
-    background-color: var(--senai-blue);
-    color: white;
-    padding: 6px 12px;
-    font-size: 0.82rem;
-    text-decoration: none;
-}
-
-.btn-action-delete {
-    background-color: #ef4444;
-    color: white;
-    padding: 6px 12px;
-    font-size: 0.82rem;
-}
-
-.btn-action-delete:hover {
-    background-color: #dc2626;
-}
-
-.empty-table {
-    text-align: center;
-    padding: 25px;
-    color: var(--text-muted);
-}
-
-/* BOTÕES GERAIS */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    transition: var(--transition);
-    cursor: pointer;
-    border: none;
-    font-family: inherit;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-/* ALERTAS */
-.alert {
-    padding: 12px 16px;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-.alert-success {
-    background-color: #dcfce7;
-    color: #15803d;
-}
-
-.alert-danger, .alert-error {
-    background-color: #fee2e2;
-    color: #b91c1c;
-}
-
-/* FOOTER */
 .footer {
     text-align: center;
     padding: 20px 0;
@@ -430,4 +387,20 @@ body.dark-mode .badge-padrao {
     color: var(--text-muted);
     font-size: 0.85rem;
     border-top: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1;
+}
+
+/* Tamanho padronizado para fotos de perfil nas tabelas */
+.user-avatar, 
+table img, 
+.table img {
+    width: 45px !important;
+    height: 45px !important;
+    max-width: 45px !important;
+    max-height: 45px !important;
+    object-fit: cover; /* Recorta a imagem proporcionalmente sem distorcer */
+    border-radius: 50%; /* Deixa a foto redondinha */
+    border: 2px solid var(--border-color);
+    vertical-align: middle;
 }
