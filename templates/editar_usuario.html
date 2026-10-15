@@ -19,7 +19,6 @@
             <a href="{{ url_for('estoque') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Estoque</a>
             <a href="{{ url_for('historico') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Histórico</a>
             <a href="{{ url_for('imprimir_relatorio') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Relatórios</a>
-            <a href="{{ url_for('perfil') }}" class="btn" style="background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 7px 14px; text-decoration: none; border-radius: 4px;">Meu Perfil</a>
             {% if session.get('tipo') == 'admin' %}
             <a href="{{ url_for('usuarios') }}" class="btn" style="background-color: #002b7a; color: white; padding: 7px 14px; text-decoration: none; border-radius: 4px;">Usuários</a>
             {% endif %}

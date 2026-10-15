@@ -30,7 +30,6 @@
             <a href="{{ url_for('estoque') }}" class="btn btn-nav">Estoque</a>
             <a href="{{ url_for('historico') }}" class="btn btn-nav">Histórico</a>
             <a href="{{ url_for('imprimir_relatorio') }}" class="btn btn-nav">Relatórios</a>
-            <a href="{{ url_for('perfil') }}" class="btn btn-nav">Meu Perfil</a>
             {% if session.get('tipo') == 'admin' %}
             <a href="{{ url_for('usuarios') }}" class="btn btn-nav btn-active">Usuários</a>
             {% endif %}
