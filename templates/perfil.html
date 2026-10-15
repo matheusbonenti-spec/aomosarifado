@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil - Almoxarifado SENAI</title>
-    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <!-- Script de pré-carregamento para evitar piscar tela branca -->
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('dark-mode');
-            document.addEventListener('DOMContentLoaded', () => {
-                document.body.classList.add('dark-mode');
-            });
-        }
-    </script>
+    <!-- CSS Base (Layout, Navbar, Cabeçalho) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- CSS de Formulários (Campos de texto, Labels e Botões) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formularios.css') }}">
 </head>
 <body>
 

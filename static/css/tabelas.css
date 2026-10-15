@@ -1,0 +1,142 @@
+.table-card {
+  padding: 0;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--text-muted);
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-mode th {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.dark-mode tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* FOTO DE PERFIL / PRODUTO NA TABELA */
+.user-avatar,
+.table img,
+table img {
+  width: 42px !important;
+  height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* BADGES (ADMIN / PADRÃO / USUÁRIO) */
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.badge-admin {
+  background-color: rgba(232, 73, 16, 0.15);
+  color: #E84910;
+}
+
+.badge-padrao, .badge-user {
+  background-color: rgba(22, 65, 148, 0.15);
+  color: #164194;
+}
+
+body.dark-mode .badge-padrao,
+body.dark-mode .badge-user {
+  background-color: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+}
+
+body.dark-mode .badge-admin {
+  background-color: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+}
+
+/* BOTÕES DE AÇÃO (EDITAR E EXCLUIR) */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-action-edit, .btn-edit {
+  background-color: var(--senai-blue) !important;
+  color: #ffffff !important;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-action-edit:hover, .btn-edit:hover {
+  background-color: #0f2d6b !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+body.dark-mode .btn-action-edit,
+body.dark-mode .btn-edit {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.btn-action-delete, .btn-delete {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-action-delete:hover, .btn-delete:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}

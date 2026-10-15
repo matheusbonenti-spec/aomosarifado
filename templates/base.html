@@ -2,19 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almoxarifado SENAI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{% block title %}Almoxarifado SENAI{% endblock %}</title>
     
-    <!-- Script pra carregar o tema antes da página renderizar (evita piscar a tela branca) -->
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('dark-mode');
-            document.addEventListener('DOMContentLoaded', () => {
-                document.body.classList.add('dark-mode');
-            });
-        }
-    </script>
+    <!-- CSS Base do Layout -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- Bloco para CSS adicional de cada página -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
@@ -34,7 +28,6 @@
             
             <!-- BOTÃO DE MUDAR DE TEMA -->
             <button class="btn-theme-toggle" id="themeToggleBtn" type="button">
-                🌙 Escuro
             </button>
 
             <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
@@ -51,7 +44,7 @@
         <p>&copy; Almoxarifado SENAI - Todos os direitos reservados.</p>
     </footer>
 
-    <!-- SCRIPT DE ALTERNÂNCIA E PERSISTÊNCIA DO MODO ESCURO -->
+    <!-- SCRIPT DE ALTERNÂNCIA E PERSISTÊNCIA DO MODO -->
     <script>
         const themeBtn = document.getElementById('themeToggleBtn');
         const body = document.body;
@@ -59,9 +52,9 @@
         // Função para atualizar o texto/ícone do botão
         function updateButtonText() {
             if (body.classList.contains('dark-mode')) {
-                themeBtn.textContent = '☀️ Claro';
+                themeBtn.textContent = 'Claro';
             } else {
-                themeBtn.textContent = '🌙 Escuro';
+                themeBtn.textContent = '';
             }
         }
 

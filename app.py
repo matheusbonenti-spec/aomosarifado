@@ -148,6 +148,7 @@ def login():
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM usuarios WHERE usuario = %s", (usuario,))
         user = cursor.fetchone()
+        print("UTILIZADOR ENCONTRADO:", user)
         cursor.close()
         conn.close()
 

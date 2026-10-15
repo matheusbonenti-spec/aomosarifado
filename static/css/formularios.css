@@ -1,0 +1,53 @@
+.form-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Inclui inputs, selects e textareas */
+.form-control,
+select.form-control,
+textarea.form-control,
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  outline: none;
+  transition: all 0.2s ease;
+  margin-bottom: 15px;
+}
+
+.form-control:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--senai-blue);
+  box-shadow: 0 0 0 3px rgba(22, 65, 148, 0.15);
+}
+
+.btn-primary,
+button[type="submit"] {
+  background-color: var(--senai-orange);
+  color: white;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover {
+  background-color: var(--senai-orange-hover);
+}

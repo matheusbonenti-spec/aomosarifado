@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuários - Almoxarifado SENAI</title>
-    <link rel="icon" href="{{ url_for('static', filename='logo_senai.jpg') }}" type="image/jpeg">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- CSS Base (Layout, Navbar, Variáveis) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- CSS Específicos da Página -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tabelas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formularios.css') }}">
 </head>
 <body>
 
@@ -32,10 +35,6 @@
             <a href="{{ url_for('usuarios') }}" class="btn btn-nav btn-active">Usuários</a>
             {% endif %}
             
-            <button onclick="alternarModoEscuro()" class="btn btn-theme-toggle" id="btnTheme">
-                Modo Batman
-            </button>
-
             <a href="{{ url_for('logout') }}" class="btn btn-logout">Sair</a>
         </nav>
     </header>

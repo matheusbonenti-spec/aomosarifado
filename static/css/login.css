@@ -1,0 +1,146 @@
+/* BOTÃO DE MODO NOTURNO NO LOGIN */
+.btn-theme-login {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.btn-theme-login:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* TELA DE LOGIN */
+body.login-body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  z-index: 1;
+}
+
+.login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card-bg);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  transition: background-color 0.3s ease;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 360px;
+}
+
+.login-header h2 {
+  color: var(--senai-blue);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.login-header h2 span {
+  color: var(--senai-orange);
+  display: block;
+}
+
+body.dark-mode .login-header h2 {
+  color: #60a5fa;
+}
+
+body.dark-mode .login-header h2 span {
+  color: #f97316;
+}
+
+.login-header p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 25px;
+}
+
+.login-right {
+  flex: 1;
+  position: relative;
+  background-image: url('../senai.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  padding: 60px 50px;
+  color: #ffffff;
+}
+
+.overlay-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(15, 23, 42, 0.85) 100%);
+  z-index: 1;
+}
+
+.login-right-content {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  text-align: left;
+}
+
+.login-right-content h3 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.login-right-content p {
+  font-size: 0.98rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+}
+
+/* RESPONSIVIDADE LOGIN */
+@media (max-width: 850px) {
+  body.login-body {
+    overflow: auto;
+  }
+  .login-container {
+    flex-direction: column-reverse;
+    height: auto;
+    min-height: 100vh;
+  }
+  .login-right {
+    min-height: 250px;
+    padding: 30px 20px;
+  }
+  .login-right-content h3 {
+    font-size: 1.4rem;
+  }
+  .login-left {
+    padding: 40px 20px;
+  }
+}

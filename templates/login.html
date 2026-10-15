@@ -1,26 +1,20 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Almoxarifado SENAI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <!-- Script para carregar o modo escuro sem piscar a tela branca -->
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('dark-mode');
-            document.addEventListener('DOMContentLoaded', () => {
-                document.body.classList.add('dark-mode');
-            });
-        }
-    </script>
+    <!-- Adicione o base.css primeiro -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- Depois os específicos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formularios.css') }}">
 </head>
 <body class="login-body">
 
     <!-- Botão Flutuante de Modo Escuro -->
     <button class="btn-theme-login" id="themeToggleBtn" type="button">
-        🌙 Escuro
+        Escuro
     </button>
 
     <div class="login-container">
@@ -77,9 +71,9 @@
 
         function updateButtonText() {
             if (body.classList.contains('dark-mode')) {
-                themeBtn.textContent = '☀️ Claro';
+                themeBtn.textContent = 'Claro';
             } else {
-                themeBtn.textContent = '🌙 Escuro';
+                themeBtn.textContent = 'Escuro';
             }
         }
 
