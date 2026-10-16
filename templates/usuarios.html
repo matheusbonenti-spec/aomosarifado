@@ -12,12 +12,6 @@
 </head>
 <body>
 
-    <!-- SCRIPT DE TEMA -->
-    <script>
-        if (localStorage.getItem('tema') === 'escuro') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
 
     <!-- CABEÇALHO PRINCIPAL -->
     <header class="header">
@@ -159,28 +153,6 @@
         <p>© 2026 <strong>SENAI</strong> - Sistema de Gestão de Almoxarifado</p>
     </footer>
 
-    <!-- SCRIPTS DE INTERAÇÃO -->
-    <script>
-        function alternarModoEscuro() {
-            document.body.classList.toggle('dark-mode');
-            let temaAtual = document.body.classList.contains('dark-mode') ? 'escuro' : 'claro';
-            localStorage.setItem('tema', temaAtual);
-        }
-
-        function filtrarTabela() {
-            let input = document.getElementById("inputPesquisa").value.toLowerCase();
-            let linhas = document.querySelectorAll("#tabelaUsuarios tbody tr");
-
-            linhas.forEach(linha => {
-                let textoLinha = linha.textContent.toLowerCase();
-                if (textoLinha.includes(input)) {
-                    linha.style.display = "";
-                } else {
-                    linha.style.display = "none";
-                }
-            });
-        }
-    </script>
 
 </body>
 </html>

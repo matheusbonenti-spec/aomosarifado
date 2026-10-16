@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS produtos (
     quantidade INT NOT NULL DEFAULT 0,
     categoria VARCHAR(50) DEFAULT 'Geral',
     descricao TEXT DEFAULT NULL,
-    imagem VARCHAR(255) DEFAULT NULL,
+    imagem_url VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

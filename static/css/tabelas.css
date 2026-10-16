@@ -20,9 +20,6 @@ th {
   border-bottom: 1px solid var(--border-color);
 }
 
-body.dark-mode th {
-  background-color: rgba(255, 255, 255, 0.04);
-}
 
 td {
   padding: 14px 16px;
@@ -34,9 +31,7 @@ tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-body.dark-mode tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.03);
-}
+
 
 /* FOTO DE PERFIL / PRODUTO NA TABELA */
 .user-avatar,
@@ -71,16 +66,7 @@ table img {
   color: #164194;
 }
 
-body.dark-mode .badge-padrao,
-body.dark-mode .badge-user {
-  background-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
-}
 
-body.dark-mode .badge-admin {
-  background-color: rgba(249, 115, 22, 0.2);
-  color: #f97316;
-}
 
 /* BOTÕES DE AÇÃO (EDITAR E EXCLUIR) */
 .action-buttons {
@@ -112,11 +98,7 @@ body.dark-mode .badge-admin {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-body.dark-mode .btn-action-edit,
-body.dark-mode .btn-edit {
-  background-color: #2563eb !important;
-  color: #ffffff !important;
-}
+
 
 .btn-action-delete, .btn-delete {
   background-color: #ef4444 !important;

@@ -126,7 +126,7 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get('tipo') != 'admin':
+        if session.get('tipo') != 'Administrador':
             flash('Acesso negado! Apenas administradores têm permissão.', 'danger')
             return redirect(url_for('estoque'))
         return f(*args, **kwargs)
@@ -155,7 +155,7 @@ def login():
         if user and (check_password_hash(user['senha'], senha) or user['senha'] == senha):
             session['user_id'] = user['id']
             session['usuario'] = user['usuario']
-            session['tipo'] = user.get('tipo', 'padrao')
+            session['tipo'] = user.get('perfil', 'padrao')
             session['foto_perfil'] = user.get('foto_perfil') or 'default_avatar.png'
             flash('Login realizado com sucesso!', 'success')
             return redirect(url_for('estoque'))
@@ -290,7 +290,7 @@ def editar_produto(id):
                         flash('Quantidade indisponível em estoque.', 'danger')
 
         elif acao == 'excluir':
-            if session.get('tipo') != 'admin':
+            if session.get('tipo') != 'Administrador':
                 flash('Apenas administradores podem excluir produtos.', 'danger')
             else:
                 cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
@@ -360,14 +360,14 @@ def usuarios():
         senha_hash = generate_password_hash(senha)
 
         try:
-            cursor.execute("INSERT INTO usuarios (usuario, senha, tipo, foto_perfil) VALUES (%s, %s, %s, %s)",
-                           (usuario, senha_hash, tipo, nome_foto))
+            cursor.execute("INSERT INTO usuarios (usuario, senha, perfil, foto_perfil) VALUES (%s, %s, %s, %s)",
+               (usuario, senha_hash, tipo, nome_foto))
             conn.commit()
             flash('Usuário cadastrado com sucesso!', 'success')
         except Exception as e:
             flash('Erro ao cadastrar usuário. Nome de usuário já existe.', 'danger')
 
-    cursor.execute("SELECT id, usuario, tipo, foto_perfil FROM usuarios ORDER BY usuario ASC")
+    cursor.execute("SELECT id, usuario, perfil, foto_perfil FROM usuarios ORDER BY usuario ASC")
     lista_usuarios = cursor.fetchall()
     cursor.close()
     conn.close()

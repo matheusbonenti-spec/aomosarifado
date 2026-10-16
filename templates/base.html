@@ -24,10 +24,6 @@
             <a href="{{ url_for('usuarios') }}" class="btn-nav">Usuários</a>
             <a href="{{ url_for('historico') }}" class="btn-nav">Histórico</a>
             <a href="{{ url_for('relatorio') }}" class="btn-nav">Relatório</a>
-            
-            <!-- BOTÃO DE MUDAR DE TEMA -->
-            <button class="btn-theme-toggle" id="themeToggleBtn" type="button">
-            </button>
 
             <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
         </nav>
@@ -44,37 +40,6 @@
     </footer>
 
     <!-- SCRIPT DE ALTERNÂNCIA E PERSISTÊNCIA DO MODO -->
-    <script>
-        const themeBtn = document.getElementById('themeToggleBtn');
-        const body = document.body;
-
-        // Função para atualizar o texto/ícone do botão
-        function updateButtonText() {
-            if (body.classList.contains('dark-mode')) {
-                themeBtn.textContent = 'Claro';
-            } else {
-                themeBtn.textContent = '';
-            }
-        }
-
-        // Verifica o tema salvo ao carregar
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-        }
-        updateButtonText();
-
-        // Clique no botão
-        themeBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-            
-            updateButtonText();
-        });
-    </script>
+    
 </body>
 </html>

@@ -66,13 +66,6 @@ body.login-body {
   display: block;
 }
 
-body.dark-mode .login-header h2 {
-  color: #60a5fa;
-}
-
-body.dark-mode .login-header h2 span {
-  color: #f97316;
-}
 
 .login-header p {
   color: var(--text-muted);

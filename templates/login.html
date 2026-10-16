@@ -63,34 +63,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Script de Alternância e Persistência do Modo Escuro -->
-    <script>
-        const themeBtn = document.getElementById('themeToggleBtn');
-        const body = document.body;
-
-        function updateButtonText() {
-            if (body.classList.contains('dark-mode')) {
-                themeBtn.textContent = 'Claro';
-            } else {
-                themeBtn.textContent = 'Escuro';
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-        }
-        updateButtonText();
-
-        themeBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-            updateButtonText();
-        });
-    </script>
+    
 </body>
 </html>
